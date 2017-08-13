@@ -3,16 +3,24 @@ from itertools import chain
 from .exceptions import ValidationException
 
 
+def slugify(text):
+    return text.strip().lower().replace(' ', '-')
+
+
 class Page:
 
     css_files = []
     js_files = []
     
-    def __init__(self, app=None, title=None, url=None, index=None):
+    def __init__(self, app, index, name=None, url=None):
         self.app = app
-        self._title = title
-        self._url = url
         self.index = index
+
+        if name is not None:
+            self._name = name
+
+        if url is not None:
+            self._url = url
 
         self._validate_attrs()
         self._init_callbacks()
@@ -20,8 +28,7 @@ class Page:
     def _validate_attrs(self):
         if not hasattr(self, 'layout'):
             msg = "Page classes must define a 'layout' attribute"
-            raise ValidationException(msg)
-        
+            raise ValidationException(msg)        
 
     def _init_callbacks(self):
         if self.app is not None and hasattr(self, 'callbacks'):
@@ -41,18 +48,14 @@ class Page:
         else:
             return self.__class__.js_files
 
-    # TODO: give the below attributes sensible defaults for
-    # when these values not provided and when not included in
-    # a deck.
-    
     @property
     def url(self):
-        if self._url is None:
-            return "page_{}".format(self.index)
+        if not hasattr(self, '_url'):
+            self._url = slugify(self.name)
         return self._url
         
     @property
-    def title(self):
-        if self._title is None:
-            return "Page {}".format(self.index)
-        return self._title
+    def name(self):
+        if not hasattr(self, '_name'):
+            self._name = self.__class__.__name__
+        return self._name

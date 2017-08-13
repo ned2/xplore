@@ -1,16 +1,18 @@
+import dash_html_components as html
+import dash_core_components as dcc
+
 from xplore.page import Page
 from xplore.story import Story
 
 
 class Introduction(Page):
-    title = "A Story"
-    layout = []
+    layout = html.H1('Introduction')
     
     def callbacks(self, app):
         pass
 
 class DashTalk(Story):
-    title = "Foo"
+    title = "Creating Reactive Web Apps in Python"
     css_files = []
     js_files = []
     pages = [

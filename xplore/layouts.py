@@ -27,13 +27,16 @@ def navbar(navbar_items):
 
 
 def main():
-    layout = html.Div(
-        id='main',
-        children=[
-            html.Div(id='navbar'),
-            html.Div(id='page')
-        ]
-    )
+    layout =html.Div([
+        dcc.Location(id='url', refresh=False),
+        html.Div(
+            id='main',
+            children=[
+                html.Div(id='navbar'),
+                html.Div(id='page')
+            ]
+        )
+    ])
     return layout
 
 

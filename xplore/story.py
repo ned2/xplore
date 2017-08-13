@@ -97,9 +97,9 @@ class Story:
             self.app.layout[self.settings.navbar_element_id] = nav_layout
             
         # Dash complains about callbacks on nonexistent elements otherwise
-        self.app.config.supress_callback_exceptions = True
+        #self.app.config.supress_callback_exceptions = True
 
-        # register the router callback
+        # register the router callback with Dash
         @self.app.callback(Output(self.settings.page_element_id, 'children'),
               [Input('url', 'pathname')])
         def display_page(pathname):
@@ -111,9 +111,12 @@ class Story:
                 default_layout = self.settings.route_not_found_layout
             elif callable(self.settings.route_not_found_layout):
                 default_layout = self.settings.route_not_found_layout(pathname)
+            else:
+                # TODO raise validation error
+                pass
             return self.routes.get(pathname, default_layout)
         
-        # register the static route
+        # register the static route with Flask
         @self.app.server.route('/{}/<path:path>'.format(
             self.settings.static_file_path))
         def send_static(path):
@@ -133,7 +136,7 @@ class Story:
         # if index_layout is specified, then we use this for the index page
         # of the story. otherwise, a layout is created according to the value 
         # of settings.index_page_type
-        if self.settings.index_page_layout is not None:
+        if self.settings.index_page_layout is None:
             if self.settings.index_page_type == 'first':
                 self.settings.index_page_layout = self.page_list[0].layout
             elif self.settings.index_page_type == 'outline':
@@ -164,10 +167,7 @@ class Story:
         if not hasattr(self, '_page_list'):
             self._page_list = []
             for i, cls in enumerate(self.pages):
-                page = cls(
-                    app=self.app,
-                    index=i
-                ) 
+                page = cls(self.app, i + 1) 
                 self._page_list.append(page)
         return self._page_list
 
@@ -176,7 +176,8 @@ class Story:
         if not hasattr(self, '_routes'):
             self._routes = {}
             for page in self.page_list:
-                self.register_route(page.url, page.layout)
+                self.register_route('/'+page.url, page.layout)
+                self.register_route('/'+str(page.index), page.layout)
         return self._routes
 
     @property
