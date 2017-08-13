@@ -174,9 +174,25 @@ class Story:
         """create the pages from the list of Page classes in 'pages' attr"""
         if not hasattr(self, '_page_list'):
             self._page_list = []
+            prev_page = None
             for i, cls in enumerate(self.pages):
-                page = cls(self.app, i + 1) 
+                # create the page
+                page = cls(self.app, i + 1)
+
+                # link the previous page's 'next_page' attr to this one
+                if prev_page is not None:
+                    prev_page.next_page = page
                 self._page_list.append(page)
+                prev_page = page
+
+            # link the last page to the first page    
+            prev_page.next_page = self._page_list[0]
+
+            # finalise each page with stuff that has to happen after
+            # the creation of all the pages
+            for page in self._page_list:
+                page.finalise()
+                
         return self._page_list
 
     @property

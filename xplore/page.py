@@ -1,10 +1,9 @@
 from itertools import chain
 
+import dash_core_components as dcc
+
+from . import utils
 from .exceptions import ValidationException
-
-
-def slugify(text):
-    return text.strip().lower().replace(' ', '-')
 
 
 class Page:
@@ -24,7 +23,19 @@ class Page:
 
         self._validate_attrs()
         self._init_callbacks()
-        
+
+    def finalise(self):
+        # do things that have to happen after creation of all other pages
+        # in the story
+        self._add_layout_hooks()
+
+    def _add_layout_hooks(self):
+        if 'title' in self.layout: 
+            self.layout['title'].children = self.name 
+        if 'next-page' in self.layout:
+            link = dcc.Link(self.layout['next-page'], href=self.next_page.url)
+            self.layout['next-page'] = link
+            
     def _validate_attrs(self):
         if not hasattr(self, 'layout'):
             msg = "Page classes must define a 'layout' attribute"
@@ -51,11 +62,11 @@ class Page:
     @property
     def url(self):
         if not hasattr(self, '_url'):
-            self._url = slugify(self.name)
+            self._url = utils.slugify(self.name)
         return self._url
         
     @property
     def name(self):
         if not hasattr(self, '_name'):
-            self._name = self.__class__.__name__
+            self._name = utils.camel_case_to_title(self.__class__.__name__)
         return self._name

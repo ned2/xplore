@@ -4,19 +4,19 @@ import dash_core_components as dcc
 from xplore.page import Page
 from xplore.story import Story
 
-from flask import Flask, send_from_directory
 
 class Introduction(Page):
+    title = "Creating Reactive Web Apps in Python"
     layout = html.Div([
-        html.H1('Introduction'),
-        dcc.Link('hey', href='hey')
+        html.H1(id='title'),
+        html.P('Next', id='next-page')
     ])
 
     
-class Hey(Page):
+class IsThisWorking(Page):
     layout = html.Div([
-        html.H1('Hey'),
-        dcc.Link('intro', href='introduction')
+        html.H1(id='title'),
+        html.P('Next', id='next-page')
     ])
 
     def callbacks(self, app):
@@ -25,11 +25,12 @@ class Hey(Page):
     
 class DashTalk(Story):
     title = "Creating Reactive Web Apps in Python"
-    css_files = ['hi']
+    css_files = []
     js_files = []
+
     pages = [
         Introduction,
-        Hey,
+        IsThisWorking,
     ]
 
 # TODO
@@ -38,15 +39,8 @@ class DashTalk(Story):
 # -- create default light and dark themes
 
 
-# next: get this thing running!!
 
 talk = DashTalk()
-
-# register the static route with Flask
-# @talk.app.server.route('/static/xplore.css')
-# def send_static():
-#     print('foo')
-#     return send_from_directory('static', 'xplore.css')
 
 if __name__ == '__main__':
     talk.app.server.run(debug=True)
