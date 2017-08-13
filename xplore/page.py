@@ -35,14 +35,14 @@ class Page:
             self.callbacks(self.app)
 
     @property
-    def css_files(self):
+    def all_css_files(self):
         if hasattr(super(), 'css_class'):
             return chain(self.__class__.css_files, super().__class__.css_files) 
         else:
             return self.__class__.css_files
 
     @property
-    def js_files(self):
+    def all_js_files(self):
         if hasattr(super(), 'css_class'):
             return self.__class__.js_files + super().__class__.js_files 
         else:

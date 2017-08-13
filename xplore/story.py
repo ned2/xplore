@@ -1,8 +1,9 @@
 import sys
+import os
 import importlib
 import inspect
 from itertools import chain
-from collections import Mapping
+from collections import Mapping, defaultdict
 
 from dash import Dash
 from dash.dependencies import Input, Output
@@ -13,7 +14,7 @@ from . import layouts
 from .exceptions import ValidationException
 
 
-class AttrDict(dict):
+class AttrDict(defaultdict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
@@ -21,7 +22,7 @@ class AttrDict(dict):
 
     
 def load_settings(module):
-    settings = AttrDict()
+    settings = AttrDict(lambda :None)
     for setting in dir(module):
         if setting.isupper():
             settings[setting.lower()] = getattr(module, setting)
@@ -30,17 +31,19 @@ def load_settings(module):
 
 class Story:
 
-    css_files = []
+    css_files = ['xplore/css/xplore.css']
     js_files = []
 
     # available settings that can be configured
     settings_attrs = (
         'page_element_id',
         'navbar_element_id',
-        'static_file_path',
+        'static_url_path',
+        'static_folder',
         'index_page_layout',
         'index_page_type',
         'route_not_found_layout',
+        'root_path',
         'navbar',
     )
 
@@ -74,21 +77,20 @@ class Story:
             value = settings_kwargs.get(setting, None)
             if value is not None:
                 self.settings[setting] = value            
-            
-        # users can supply their own Dash app instance, or one will be created
-        if app is not None:
-            self.app = app
-        else:
-            if server is not None:
-                self.app = Dash(server=server)
-            else:
-                self.app = Dash()
 
-        self._init_app()
+        self._init_app(server)
         self._set_index_route()
         self._validate_attrs()
 
-    def _init_app(self):
+    def _init_app(self, server):
+        if server is None:
+            flask_kwargs = {}
+            for param in ('static_url_path', 'static_folder'):
+                if self.settings[param] is not None:
+                    flask_params[param] = self.settings[param]
+            server = Flask(__name__, **flask_kwargs)
+
+        self.app = Dash(name=__name__, server=server)
         self.app.title = self.title
         self.app.layout = layouts.main()
 
@@ -97,7 +99,7 @@ class Story:
             self.app.layout[self.settings.navbar_element_id] = nav_layout
             
         # Dash complains about callbacks on nonexistent elements otherwise
-        #self.app.config.supress_callback_exceptions = True
+        self.app.config.supress_callback_exceptions = True
 
         # register the router callback with Dash
         @self.app.callback(Output(self.settings.page_element_id, 'children'),
@@ -117,18 +119,19 @@ class Story:
             return self.routes.get(pathname, default_layout)
         
         # register the static route with Flask
-        @self.app.server.route('/{}/<path:path>'.format(
-            self.settings.static_file_path))
+        @self.app.server.route('{}/xplore/<path:path>'.format(
+            self.app.server.static_url_path))
         def send_static(path):
-            return send_from_directory('static', path)
+            static_path = os.path.join(self.xplore_base_path, 'static')
+            return send_from_directory(static_path, path)
 
         # register all CSS files with app
-        for css_path in self.css_files:
+        for css_path in self.all_css_files:
             full_css_path = self._get_static_path(css_path) 
             self.app.css.append_css({"external_url": full_css_path})
 
         # register all JS files with app
-        for js_path in self.js_files:
+        for js_path in self.all_js_files:
             full_js_path = self._get_static_path(js_path) 
             self.app.css.append_css({"external_url": full_js_path})
 
@@ -151,16 +154,21 @@ class Story:
         self.register_route('/', self.settings.index_page_layout)
             
     def _validate_attrs(self):
-        if not hasattr(self, 'app'):
-            msg = "Page classes must define an 'app' attribute"
-            raise ValidationException(msg)
+        pass
+        # if not hasattr(self, 'app'):
+        #     msg = "Page classes must define an 'app' attribute"
+        #     raise ValidationException(msg)
 
     def _get_static_path(self, path):
-        return '/'.join(self.settings.static_file_path.rstrip('/'), path)
+        return '{}/{}'.format(self.app.server.static_url_path.rstrip('/'), path)
 
     def register_route(self, route, layout):
         self.routes[route] = layout
-        
+
+    @property
+    def xplore_base_path(self):
+        return os.path.dirname(os.path.realpath(__file__))
+    
     @property
     def page_list(self):
         """create the pages from the list of Page classes in 'pages' attr"""
@@ -181,18 +189,18 @@ class Story:
         return self._routes
 
     @property
-    def css_files(self):
+    def all_css_files(self):
         # returns a generator yielding all CSS files attached to pages used in
         # this story as well as those attached to this story
-        pages_css = (page.css_files for page in self.page_list)
-        return chain(self.__class__.css_files, *pages_css)
+        pages_css = (page.all_css_files for page in self.page_list)
+        return chain(Story.css_files, *pages_css)
     
     @property
-    def js_files(self):
+    def all_js_files(self):
         # returns a generator yielding all JS files attached to pages used in this
         # story as well as those attached to this story
-        pages_css = (page.js_files for page in self.page_list)
-        return chain(self.__class__.js_files, *pages_css)
+        pages_js = (page.all_js_files for page in self.page_list)
+        return chain(Story.js_files, *pages_js)
     
     @property
     def nav_items(self):
