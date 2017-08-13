@@ -1,6 +1,6 @@
 from itertools import chain
 
-from exceptions import ValidationException
+from .exceptions import ValidationException
 
 
 class Page:
@@ -18,8 +18,8 @@ class Page:
         self._init_callbacks()
         
     def _validate_attrs(self):
-        if not hasattr('layout'):
-            msg = Page classes must define a 'layout' attribute""
+        if not hasattr(self, 'layout'):
+            msg = "Page classes must define a 'layout' attribute"
             raise ValidationException(msg)
         
 

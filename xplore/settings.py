@@ -1,7 +1,11 @@
 PAGE_ELEMENT_ID = 'page'
+
 NAVBAR_ELEMENT_ID = 'navbar'
 
 STATIC_FILE_PATH = 'static'
 
+INDEX_PAGE_TYPE = 'first'
 
-INDEX_PAGE_TYPE = 'outline'
+INDEX_PAGE_LAYOUT = None
+
+ROUTE_NOT_FOUND_LAYOUT = None 

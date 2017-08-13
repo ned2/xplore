@@ -25,7 +25,7 @@ class DashTalk(Story):
 
 # next: get this thing running!!
 
-talk = DashTalk(index_type='outline')
+talk = DashTalk()
 
 if __name__ == '__main__':
-    talk.app.run_server(debug=True)
+    talk.app.server.run(debug=True)
