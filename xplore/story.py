@@ -41,15 +41,24 @@ class Story:
     settings_attrs = (
         'page_element_id',
         'navbar_element_id',
-        'static_url_path',
-        'static_folder',
         'index_page_layout',
         'index_page_type',
         'route_not_found_layout',
         'root_path',
+        'use_bootstrap',
+        'bootstrap_js_urls',
+        'bootstrap_css_urls',
         'navbar',
+        'static_url_path',
+        'static_folder',
     )
 
+    # subset of 'settings_attrs' that should be passed onto Flask
+    flask_setting_attrs = (
+        'static_url_path',
+        'static_folder'
+    )
+    
     index_page_options = (
         'outline',
         'first',
@@ -60,14 +69,19 @@ class Story:
     def __init__(self, app=None, server=None, settings=None, **settings_kwargs):
         # load the settings
         if settings is None:
+            # no settings supplied, use xplore's defaults.  TODO: a local
+            # settings.py in the same directory as class inheriting from Story
+            # should be automatically used instead of xplore's
             settings_module = importlib.import_module('.settings', __package__)
             self.settings = load_settings(settings_module)
         elif isinstance(settings, str):
+            # a string containing the settings module was supplied
             app_path = inspect.getfile(self.__class__)
             sys.path.append(app_path)
             settings_module = importlib.import_module(settings)
             self.settings = load_settings(settings_module)
         elif isinstance(Mapping):
+            # a dict-like object with settings as key-values was supplied
             self.settings = settings
         else:
             msg = "'settings' parameter must a string containing the name of " \
@@ -76,7 +90,8 @@ class Story:
             raise ValidationException(msg)
 
         for setting in self.settings_attrs:
-            # update current settings with those specified as parameters
+            # update current settings with those specified as parameters these
+            # will override any settings supplied with the 'settings' parameter
             value = settings_kwargs.get(setting, None)
             if value is not None:
                 self.settings[setting] = value            
@@ -88,7 +103,7 @@ class Story:
     def _init_app(self, server):
         if server is None:
             flask_kwargs = {}
-            for param in ('static_url_path', 'static_folder'):
+            for param in self.flask_setting_attrs:
                 if self.settings[param] is not None:
                     flask_params[param] = self.settings[param]
             server = Flask(__name__, **flask_kwargs)
@@ -98,8 +113,9 @@ class Story:
         self.app.layout = layouts.main()
 
         if self.settings.navbar:
+            navbar_id = self.settings.navbar_element_id
             nav_layout = layouts.navbar(self.nav_items)
-            self.app.layout[self.settings.navbar_element_id] = nav_layout
+            self.app.layout[navbar_id].children = nav_layout
             
         # Dash complains about callbacks on nonexistent elements otherwise
         self.app.config.supress_callback_exceptions = True
@@ -111,7 +127,7 @@ class Story:
             # users can supply a default layout which can either be
             # a dash component. a callable that returns a dash layout
             if self.settings.route_not_found_layout is None:
-                default_layout = layouts.url_not_found(pathname)
+                default_layout = layouts.page_not_found(pathname)
             elif isinstance(self.settings.route_not_found_layout, Component):
                 default_layout = self.settings.route_not_found_layout
             elif callable(self.settings.route_not_found_layout):
@@ -120,6 +136,10 @@ class Story:
                 # TODO raise validation error
                 pass
             return self.routes.get(pathname, default_layout)
+        
+        if self.settings.use_bootstrap:
+            self.css_files.extend(self.settings.bootstrap_css_urls)
+            self.js_files.extend(self.settings.bootstrap_js_urls)
         
         # register the static route with Flask
         @self.app.server.route('{}/xplore/<path:path>'.format(
@@ -130,13 +150,13 @@ class Story:
 
         # register all CSS files with app
         for css_path in self.all_css_files:
-            full_css_path = self._get_static_path(css_path) 
+            full_css_path = self._get_asset_path(css_path) 
             self.app.css.append_css({"external_url": full_css_path})
 
         # register all JS files with app
         for js_path in self.all_js_files:
-            full_js_path = self._get_static_path(js_path) 
-            self.app.css.append_css({"external_url": full_js_path})
+            full_js_path = self._get_asset_path(js_path) 
+            self.app.scripts.append_script({"external_url": full_js_path})
 
     def _set_index_route(self):
         # if index_layout is specified, then we use this for the index page
@@ -162,7 +182,9 @@ class Story:
         #     msg = "Page classes must define an 'app' attribute"
         #     raise ValidationException(msg)
 
-    def _get_static_path(self, path):
+    def _get_asset_path(self, path):
+        if path.startswith('http'):
+            return path
         return '{}/{}'.format(self.app.server.static_url_path.rstrip('/'), path)
 
     def register_route(self, route, layout):
@@ -212,15 +234,15 @@ class Story:
         # returns a generator yielding all CSS files attached to pages used in
         # this story as well as those attached to this story
         pages_css = (page.all_css_files for page in self.page_list)
-        return chain(Story.css_files, *pages_css)
+        return chain(Story.css_files, self.__class__.css_files, *pages_css)
     
     @property
     def all_js_files(self):
         # returns a generator yielding all JS files attached to pages used in this
         # story as well as those attached to this story
         pages_js = (page.all_js_files for page in self.page_list)
-        return chain(Story.js_files, *pages_js)
+        return chain(Story.js_files, self.__class__.js_files, *pages_js)
     
     @property
     def nav_items(self):
-        return [(page.url, page.title) for page in self.page_list]
+        return [(page.url, page.name) for page in self.page_list]

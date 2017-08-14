@@ -21,7 +21,7 @@ class Page:
         if url is not None:
             self._url = url
 
-        self._validate_attrs()
+        self._get_layout()
         self._init_callbacks()
 
     def finalise(self):
@@ -32,15 +32,24 @@ class Page:
     def _add_layout_hooks(self):
         if 'title' in self.layout: 
             self.layout['title'].children = self.name 
+
         if 'next-page' in self.layout:
             link = dcc.Link(self.layout['next-page'], href=self.next_page.url)
             self.layout['next-page'] = link
             
-    def _validate_attrs(self):
-        if not hasattr(self, 'layout'):
-            msg = "Page classes must define a 'layout' attribute"
-            raise ValidationException(msg)        
+    def _get_layout(self):
+        # use of get_layout method will override a layout attribute 
+        if hasattr(self, 'get_layout'):
+            try:
 
+                self.layout = self.get_layout()
+            except Exception as e:
+                raise e
+        if not hasattr(self, 'layout'):
+            msg = "Page subclasses must either define a 'layout' attribute " \
+                  "or a 'get_layout' method"
+            raise ValidationException(msg)
+        
     def _init_callbacks(self):
         if self.app is not None and hasattr(self, 'callbacks'):
             self.callbacks(self.app)
@@ -58,7 +67,7 @@ class Page:
             return self.__class__.js_files + super().__class__.js_files 
         else:
             return self.__class__.js_files
-
+    
     @property
     def url(self):
         if not hasattr(self, '_url'):

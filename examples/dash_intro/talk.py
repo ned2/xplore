@@ -1,29 +1,43 @@
-import dash_html_components as html
-import dash_core_components as dcc
+from dash_html_components import *
+from dash_core_components import *
 
 from xplore.page import Page
 from xplore.story import Story
+from xplore.layouts import one_col_page, two_col_page
+
+
 
 
 class Introduction(Page):
     name = "Creating Reactive Web Apps in Python"
-    layout = html.Div([
-        html.H1(id='title'),
-        dcc.Markdown("""
+    
+    def get_layout(self):
+        layout = two_col_page
+        layout['content-1'] = Markdown(
+"""
 ### hello!
 
 Scenario
 * hello blah
 * foo
-        """),
-        html.P('Next', id='next-page')
-    ])
+"""
+        )
+        layout['content-2'] = Markdown(
+"""
+### also hi
+
+Scenario
+* hello blah
+* foo
+"""
+        )
+        return layout
 
     
 class IsThisWorking(Page):
-    layout = html.Div([
-        html.H1(id='title'),
-        html.P('Next', id='next-page')
+    layout = Div([
+        H1(id='title'),
+        P('Next', id='next-page')
     ])
 
     def callbacks(self, app):

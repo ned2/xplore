@@ -1,10 +1,30 @@
+html { font-size: 2em;}
+
+
 #page {
     transition: opacity .25s ease-in-out;
     margin: 0 50px;
-    font-size: 3em;
     font-family: 'Source Sans Pro';
 }
 
-h1 {
-    margin-top: 0;
+#page h1 {
+    margin-bottom: 1em;;
 }
+
+#navbar {
+    display: none;
+}
+
+#navbar:hover {
+    display: block;
+}
+
+/* All links generated through Dash should have pointer for hover */
+a.link:hover, a.link:focus {cursor: pointer}
+
+/* We embed a regular anchor tag inside Dash links so it has an href which
+Bootstrap link-like anchor styles depend and so that the target url can be
+copied. This means we need to disable events on the inner anchor so as to not
+trigger a page-load when clicked. */
+a.link a {pointer-events: none}
+
