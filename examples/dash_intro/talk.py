@@ -6,9 +6,16 @@ from xplore.story import Story
 
 
 class Introduction(Page):
-    title = "Creating Reactive Web Apps in Python"
+    name = "Creating Reactive Web Apps in Python"
     layout = html.Div([
         html.H1(id='title'),
+        dcc.Markdown("""
+### hello!
+
+Scenario
+* hello blah
+* foo
+        """),
         html.P('Next', id='next-page')
     ])
 

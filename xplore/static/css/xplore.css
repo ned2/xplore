@@ -1,0 +1,10 @@
+#page {
+    transition: opacity .25s ease-in-out;
+    margin: 0 50px;
+    font-size: 3em;
+    font-family: 'Source Sans Pro';
+}
+
+h1 {
+    margin-top: 0;
+}

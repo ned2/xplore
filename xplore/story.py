@@ -31,7 +31,10 @@ def load_settings(module):
 
 class Story:
 
-    css_files = ['xplore/css/xplore.css']
+    css_files = [
+        'xplore/css/xplore.css',
+        'xplore/font/source-sans-pro/source-sans-pro.css',
+    ]
     js_files = []
 
     # available settings that can be configured
