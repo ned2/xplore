@@ -1,9 +1,12 @@
 from itertools import chain
 
 import dash_core_components as dcc
+import dash_html_components as html
 
 from . import utils
 from .exceptions import ValidationException
+
+from .layouts import make_page_layout
 
 
 class Page:
@@ -22,7 +25,13 @@ class Page:
         if url is not None:
             self._url = url
 
-        self._get_layout()
+        try:
+            self.layout = self._get_layout()
+            self._add_classes()
+            self._add_styles()
+        except ValidationException as e:
+            self.layout = html.P(str(e))   
+
         self._init_callbacks()
 
     def finalise(self):
@@ -39,15 +48,23 @@ class Page:
             self.layout['next-page'] = link
             
     def _get_layout(self):
-        # use of get_layout method will override a layout attribute 
-        if hasattr(self, 'get_layout'):
-            self.layout = self.get_layout()
-
-        if not hasattr(self, 'layout'):
-            msg = "Page subclasses must either define a 'layout' attribute " \
-                  "or a 'get_layout' method"
+        # use of get_layout method or shape and content attrs will override a
+        # layout attribute
+        if hasattr(self, 'layout'):
+            layout = self.layout
+        elif hasattr(self, 'get_layout'):
+            layout = self.get_layout()  
+        elif hasattr(self, 'shape') and hasattr(self, 'content'): 
+            # possibly could make content optional; not sure what someone would
+            # do with the content-less layout tree
+            layout = make_page_layout(shape=self.shape, content=self.content)
+        else:
+            msg = "Page subclasses must either define a 'layout' attribute, " \
+                  "a 'get_layout' method, or both 'shape' and 'content' attributes."
             raise ValidationException(msg)
-
+        return layout
+    
+    def _add_classes(self):
         if hasattr(self, 'classes'):
             new_classes = self.classes
 
@@ -57,9 +74,9 @@ class Page:
                 
             self.layout.className = " ".join(new_classes)
 
-        if hasattr(self, 'styles'):
-            # TODO
-            pass
+    def _add_styles(self):
+        if hasattr(self, 'style'):
+            self.layout.style = self.style
         
     def _init_callbacks(self):
         if self.app is not None and hasattr(self, 'callbacks'):

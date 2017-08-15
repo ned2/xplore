@@ -8,29 +8,38 @@ from xplore.layouts import *
 class Title(Page):
     name = "Creating Reactive Web Apps in Python"
     classes = ['center', 'row-buffers']
-    
-    def get_layout(self):
-        content = [
-            Markdown(
+    shape = [[12],[12],[12]]
+    content = [
+        Markdown(
 """
-### Ned Letcher
-@nletcher
+#### Ned Letcher
+@nletcher\\
+nedned.net
 """),
             Img(src='/static/img/forefront.jpg'),
             Img(src='/static/img/melbourne-uni.png', style={'width':'15%'}),
         ]
-        layout = page([1,1,1], content=content)
-        return layout
-
 
     
-class IsThisWorking(Page):
-    layout = Div([
-        H1(id='title'),
-        P('Next', id='next-page')
-    ])
-
-    def callbacks(self, app):
-        pass
+class Context(Page):
+    name = "So you have some data" 
+    shape = [[6, 4]]
+    content = [
+        Markdown(
+"""
+* You've done some analysis
+* You want to communicate results with a visualisation
+* It needs to be
+    * _interactive_
+    * _shareable_
+"""),
+        Markdown(
+"""
+But you have a finite amount of
+* time
+* people
+* skills
+""", className='warning note')
+    ]
 
     

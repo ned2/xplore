@@ -1,4 +1,4 @@
-class XploreBaseException:
+class XploreBaseException(BaseException):
 
     def __init__(self, msg=None):
         self.msg = msg
