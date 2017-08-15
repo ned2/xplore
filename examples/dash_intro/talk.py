@@ -6,21 +6,30 @@ from xplore.story import Story
 from xplore.layouts import *
 
 
-# TODO:
-# start writing the talk
-# I'm at a point where all styling can be done after the fact.
-# start with intro slide and get on it :)
+# Possible dash bug:
+# -- img with no 'src' attribute specified seems to be triggering the
+#    URL callback with a pathname of None
+# -- also Img with a 'style' attr that is a string instead of a dict
+
+
+
+# Various issues:
+# 
+# I am automatically prefixing static dir for CSS and JS urls but not for
+# images.
+
+
 
 class Title(Page):
     name = "Creating Reactive Web Apps in Python"
-    classes = ['center']
+    classes = ['center', 'row-buffers']
     
     def get_layout(self):
-        content = {
-            'content-1': P('Ned Letcher'),
-            'content-2': P('Ned Letcher'),
-            'content-3': P('Ned Letcher'),
-        }
+        content = [
+            P('Ned Letcher'),
+            Img(src='/static/img/forefront.jpg'),
+            Img(src='/static/img/melbourne-uni.png', style={'width':'15%'}),
+        ]
         layout = page([1,1,1], content=content)
         return layout
 
@@ -37,7 +46,7 @@ class IsThisWorking(Page):
     
 class DashTalk(Story):
     title = "Creating Reactive Web Apps in Python"
-    css_files = []
+    css_files = ['css/talk.css']
     js_files = []
 
     pages = [

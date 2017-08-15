@@ -76,6 +76,7 @@ class Story:
             self.settings = load_settings(settings_module)
         elif isinstance(settings, str):
             # a string containing the settings module was supplied
+            # TODO: this won't work
             app_path = inspect.getfile(self.__class__)
             sys.path.append(app_path)
             settings_module = importlib.import_module(settings)
@@ -96,16 +97,27 @@ class Story:
             if value is not None:
                 self.settings[setting] = value            
 
+        # derive and save what is hopefully the path to the file that
+        # defines the Story subclass being used
+        self.class_path = os.path.abspath(inspect.getfile(self.__class__))
+
         self._init_app(server)
         self._set_index_route()
         self._validate_attrs()
 
     def _init_app(self, server):
         if server is None:
+            # extract flask specific params from the settings
             flask_kwargs = {}
             for param in self.flask_setting_attrs:
                 if self.settings[param] is not None:
-                    flask_params[param] = self.settings[param]
+                    flask_kwargs[param] = self.settings[param]
+
+            # prefix the 'static_folder' param with the root of the user's project
+            flask_kwargs['static_folder'] = os.path.join(
+                os.path.dirname(self.class_path), 
+                flask_kwargs.get('static_folder', 'static')
+            )
             server = Flask(__name__, **flask_kwargs)
 
         self.app = Dash(name=__name__, server=server)
@@ -141,7 +153,7 @@ class Story:
             self.css_files.extend(self.settings.bootstrap_css_urls)
             self.js_files.extend(self.settings.bootstrap_js_urls)
         
-        # register the static route with Flask
+        # register xplore's static route with Flask
         @self.app.server.route('{}/xplore/<path:path>'.format(
             self.app.server.static_url_path))
         def send_static(path):

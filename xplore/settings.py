@@ -12,18 +12,17 @@ USE_BOOTSTRAP = True
 
 NAVBAR = True
 
-# Change this if you need to override Flask's default
-#STATIC_FOLDER = 'static'
+# path of static files relative to your project root 
+STATIC_FOLDER = 'static'
 
 # Change this if you need to override Flask's default
 #STATIC_URL_PATH = '/static'
 
-# The generated routes will be prefixed with the value of STATIC_URL_PATH unless
+# change BOOTSTRAP_CSS_URLS and BOOTSTRAP_JS_URLS if you want to use a different
+# version of bootstrap from the one that comes with xplore (v4.0.0 beta) The
+# generated routes will be prefixed with the value of STATIC_URL_PATH unless
 # they begin with 'http'
 BOOTSTRAP_CSS_URLS = ['xplore/css/bootstrap.min.css']
-
-# The generated routes will be prefixed with the value of STATIC_URL_PATH unless
-# they begin with 'http'
 BOOTSTRAP_JS_URLS = [
     'xplore/js/jquery-3.2.1.slim.min.js',
     'xplore/js/popper.min.js',

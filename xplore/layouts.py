@@ -1,3 +1,5 @@
+from collections import Mapping, Iterable
+
 from dash_html_components import *
 from dash_core_components import *
 
@@ -57,9 +59,19 @@ def page(rows=None, header=True, content=None):
     new_page = Div(row_list)
 
     if content is not None:
-        for id_name, value in content.items():
-            new_page[id_name] = value
-            
+        # content is a dict-like object with element-ID keys and components as
+        # values
+        if isinstance(content, Mapping):
+            for id_name, value in content.items():
+                new_page[id_name] = value
+        elif isinstance(content, Iterable):
+            # content is a dict-like object with element-ID keys and components as
+            # values
+            for i, value in enumerate(content):
+                new_page['content-{}'.format(i+1)] = value
+        else:
+            msgs = "'content' param must be a dict-like object or an iterable"
+            raise ValidationException(msg)
     return new_page
 
 
