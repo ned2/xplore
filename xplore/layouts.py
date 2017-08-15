@@ -18,162 +18,6 @@ def main():
     return layout
 
 
-def link(href, text):
-    return Link(A(text, href=href), href=href, className='link')
-
-
-def nav_li(href, text, active=False):
-    className = 'nav-item nav-link' + (' active' if active else ''),
-    return Li(link(href, text), className=className)
-
-
-def navbar(navbar_items):
-    lis = [nav_li(href, text) for href, text in navbar_items]
-    layout = Nav(
-        className='',
-        children=Ul(lis, className='nav nav-pills'),
-    )
-    return layout
-
-
-def header_row():
-    return Div(
-        className='row',
-        children=Div(
-            className='col-lg-12',
-            children=H1(id='title')
-        ),
-    )
-
-
-def next_page_row():
-    return Div(
-        className='row',
-        children=Div(
-            className='col-lg-12',
-            children=P('Next', id='next-page')
-        ),
-    )
-
-
-def one_col_row(id_start=1):
-    return Div(
-        className='row',
-        children=Div(
-            className='col-lg-12',
-            children=Div(id='content-1')
-        ),
-    )
-
-
-def two_col_row(id_start=1):
-    return Div(
-        className='row',
-        children=[
-            Div(
-                className='col-lg-6',
-                children=Div(id='content-1')
-            ),
-            Div(
-                className='col-lg-6',
-                children=Div(id='content-2')
-            ),
-        ]
-    )
-
-
-def three_col_row(id_start=1):
-    return Div(
-        className='row',
-        children=[
-            Div(
-                className='col-lg-4',
-                children=Div(id='content-1')
-            ),
-            Div(
-                className='col-lg-4',
-                children=Div(id='content-2')
-            ),
-            Div(
-                className='col-lg-4',
-                children=Div(id='content-3')
-            ),
-        ]
-    )
-
-
-def four_col_row(id_start=1):
-    return Div(
-        className='row',
-        children=[
-            Div(
-                className='col-lg-3',
-                children=Div(id='content-1')
-            ),
-            Div(
-                className='col-lg-3',
-                children=Div(id='content-2')
-            ),
-            Div(
-                className='col-lg-3',
-                children=Div(id='content-3')
-            ),
-            Div(
-                className='col-lg-3',
-                children=Div(id='content-4')
-            ),
-        ]
-    )
-
-
-def six_col_row(id_start=1):
-    return Div(
-        className='row',
-        children=[
-            Div(
-                className='col-lg-2',
-                children=Div(id='content-1')
-            ),
-            Div(
-                className='col-lg-2',
-                children=Div(id='content-2')
-            ),
-            Div(
-                className='col-lg-2',
-                children=Div(id='content-3')
-            ),
-            Div(
-                className='col-lg-2',
-                children=Div(id='content-4')
-            ),
-            Div(
-                className='col-lg-2',
-                children=Div(id='content-5')
-            ),
-            Div(
-                className='col-lg-2',
-                children=Div(id='content-6')
-            ),
-        ]
-    )
-
-
-def row_old(ncols=1):
-    col_map = {
-        1: one_col_row,
-        2: two_col_row,
-        3: three_col_row,
-        4: four_col_row,
-        6: six_col_row,
-        12: twelve_col_row,        
-    }
-    if ncols not in col_map:
-        msg = "Valid values for 'ncols' param are: " \
-              "{}".format(", ".join(col_map))
-        raise ValidationException(msg)
-    return col_map[ncols]()
-
-
 def row(ncols=1, start_id=1):
     valid_cols = {1,2,3,4,6,12}
     if ncols not in valid_cols:
@@ -207,7 +51,62 @@ def page(rows=None, header=True):
         start_id = sum(rows[:i]) + 1
         row_list.append(row(ncols, start_id=start_id))
 
+    row_list.append(next_page_row())
     return Div(row_list)
+
+
+def link(href, text):
+    return Link(A(text, href=href), href=href, className='link')
+
+
+def nav_li(href, text, active=False):
+    className = 'nav-item nav-link' + (' active' if active else ''),
+    return Li(link(href, text), className=className)
+
+
+def navbar(navbar_items):
+    lis = [nav_li(href, text) for href, text in navbar_items]
+    layout = Nav(
+        className='',
+        children=Ul(lis, className='nav nav-pills'),
+    )
+    return layout
+
+
+def header_row():
+    return Div(
+        className='row',
+        children=Div(
+            className='col-lg-12',
+            children=H1(id='title')
+        ),
+    )
+
+
+def next_page_row():
+    row = one_col_row()
+    row['content-1'] = P('Next', id='next-page')
+    return row
+
+
+def one_col_row(start_id=1):
+    return row(ncols=1, start_id=start_id)
+
+
+def two_col_row(start_id=1):
+    return row(ncols=2, start_id=start_id)
+
+
+def three_col_row(start_id=1):
+    return row(ncols=3, start_id=start_id)
+
+
+def four_col_row(start_id=1):
+    return row(ncols=4, start_id=start_id)
+
+
+def six_col_row(start_id=1):
+    return row(ncols=6, start_id=start_id)
 
 
 def page_not_found(pathname):
