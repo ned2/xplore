@@ -10,6 +10,9 @@ INDEX_PAGE_TYPE = 'first'
 
 USE_BOOTSTRAP = True
 
+# does not work as expected currently
+SERVE_LOCALLY = False
+
 NAVBAR = True
 
 # path of static files relative to your project root 

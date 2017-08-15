@@ -7,23 +7,27 @@ from xplore.layouts import *
 
 class Title(Page):
     name = "Creating Reactive Web Apps in Python"
-    classes = ['center', 'row-buffers']
-    shape = [[12],[12],[12]]
+    classes = ['center']
+    shape = [[6, 6]]
     content = [
-        Markdown(
+        #one_col_row(Div(style={'height':'1em'})),
+        Div(Markdown(
 """
 #### Ned Letcher
-@nletcher\\
-nedned.net
-"""),
-            Img(src='/static/img/forefront.jpg'),
-            Img(src='/static/img/melbourne-uni.png', style={'width':'15%'}),
-        ]
+    nedned.net
+    @nletcher
+"""), style={'text-align':'left'}),
+        [
+            one_col_row(Img(src='/static/img/forefront.jpg',
+                            style={'margin-bottom':'2em'})),
+            one_col_row(Img(src='/static/img/melbourne-uni.png',
+                            style={'width':'35%'}))
+        ]]
 
     
 class Context(Page):
     name = "So you have some data" 
-    shape = [[6, 4]]
+    shape = [[8, 4]]
     content = [
         Markdown(
 """
@@ -35,10 +39,10 @@ class Context(Page):
 """),
         Markdown(
 """
-But you have a finite amount of
+But you have a finite
 * time
 * people
-* skills
+* capabilities
 """, className='warning note')
     ]
 

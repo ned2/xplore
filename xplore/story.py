@@ -45,6 +45,7 @@ class Story:
         'index_page_type',
         'route_not_found_layout',
         'root_path',
+        'serve_locally',
         'use_bootstrap',
         'bootstrap_js_urls',
         'bootstrap_css_urls',
@@ -122,8 +123,10 @@ class Story:
 
         self.app = Dash(name=__name__, server=server)
         self.app.title = self.title
+        self.app.css.config.serve_locally = self.settings.serve_locally
+        self.app.css.config.serve_locally = self.settings.serve_locally
         self.app.layout = layouts.main()
-
+        
         if self.settings.navbar:
             navbar_id = self.settings.navbar_element_id
             nav_layout = layouts.navbar(self.nav_items)

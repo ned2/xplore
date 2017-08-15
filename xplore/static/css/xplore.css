@@ -1,4 +1,4 @@
-html { font-size: 2em;}
+html { font-size: 3em;}
 
 /* All links generated through Dash should have pointer for hover */
 a.link:hover, a.link:focus {cursor: pointer}
@@ -21,12 +21,12 @@ a.link a {pointer-events: none}
 
 #page {
     transition: opacity .25s ease-in-out;
-    margin: 0 50px;
     font-family: 'Source Sans Pro';
 }
 
 #page h1 {
-    margin-bottom: 1em;;
+    text-align: center;
+    margin-bottom: 0.5em;
 }
 
 #page .center {text-align: center;}
