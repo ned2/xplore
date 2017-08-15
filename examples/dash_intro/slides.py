@@ -22,7 +22,8 @@ class Title(Page):
                             style={'margin-bottom':'2em'})),
             one_col_row(Img(src='/static/img/melbourne-uni.png',
                             style={'width':'35%'}))
-        ]]
+        ]
+    ]
 
     
 class Context(Page):
@@ -46,4 +47,37 @@ But you have a finite
 """, className='warning note')
     ]
 
+    
+class JavaScript(Page):
+    name = "Use a JavaScript library?" 
+    shape = [[8, 4]]
+    content = [
+        Markdown(
+"""
+eg D3.js, plotly.js, Chart.js, Vega etc...
+* but most data analytics not done in JavaScript
+* integrating data will take time
+* requires front-end development skills
+* full stack developers??
+"""),
+        Div([
+            one_col_row(Img(src='/static/img/d3.png', style={'width':'30%'})),
+            one_col_row(Img(src='/static/img/plotly.png')),
+            one_col_row(Img(src='/static/img/chartjs.jpg')),
+        ], className='center vertical-pad')
+    ]
+
+# so what do data scientists frequently code their models in?
+
+
+class R(Page):
+    name = "R -- Shiny!" 
+
+
+class Python(Page):
+    name = "Python" 
+
+    
+class Dash(Page):
+    pass
     

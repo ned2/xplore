@@ -29,6 +29,7 @@ class DashTalk(Story):
     pages = [
         Title, 
         Context,
+        JavaScript,
     ]
 
 

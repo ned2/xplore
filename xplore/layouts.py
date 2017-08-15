@@ -129,7 +129,6 @@ def navbar(navbar_items):
 
 
 def one_col_row(content):
-    print(content)
     return _make_row(cols=[12], content=content)
 
 
