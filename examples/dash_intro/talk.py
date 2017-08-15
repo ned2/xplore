@@ -3,16 +3,23 @@ from dash_core_components import *
 
 from xplore.page import Page
 from xplore.story import Story
-from xplore.layouts import one_col_page, two_col_page
+from xplore.layouts import *
 
 
+# TODO:
+# start writing the talk
+# I'm at a point where all styling can be done after the fact.
+# start with intro slide and get on it :)
 
-
-class Introduction(Page):
+class Title(Page):
     name = "Creating Reactive Web Apps in Python"
+
+    # TODO
+    # classes = []
+    # styles = []
     
     def get_layout(self):
-        layout = two_col_page
+        layout = page()
         layout['content-1'] = Markdown(
 """
 ### hello!
@@ -22,18 +29,9 @@ Scenario
 * foo
 """
         )
-        layout['content-2'] = Markdown(
-"""
-### also hi
-
-Scenario
-* hello blah
-* foo
-"""
-        )
         return layout
 
-    
+
 class IsThisWorking(Page):
     layout = Div([
         H1(id='title'),
@@ -50,7 +48,7 @@ class DashTalk(Story):
     js_files = []
 
     pages = [
-        Introduction,
+        Title, 
         IsThisWorking,
     ]
 

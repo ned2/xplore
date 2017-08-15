@@ -19,6 +19,12 @@ html { font-size: 2em;}
     display: block;
 }
 
+#next-page {
+    position: fixed;
+    top: 0;
+    right: 30px;
+}
+
 /* All links generated through Dash should have pointer for hover */
 a.link:hover, a.link:focus {cursor: pointer}
 
