@@ -37,7 +37,7 @@ def row(ncols=1, start_id=1):
     return Div(className='row', children=cols)
 
 
-def page(rows=None, header=True):
+def page(rows=None, header=True, content=None):
     if rows is None:
         # default to one row with a single column
         rows = [1]
@@ -52,7 +52,15 @@ def page(rows=None, header=True):
         row_list.append(row(ncols, start_id=start_id))
 
     row_list.append(next_page_row())
-    return Div(row_list)
+
+    # the page of rows
+    new_page = Div(row_list)
+
+    if content is not None:
+        for id_name, value in content.items():
+            new_page[id_name] = value
+            
+    return new_page
 
 
 def link(href, text):

@@ -1,5 +1,23 @@
 html { font-size: 2em;}
 
+/* All links generated through Dash should have pointer for hover */
+a.link:hover, a.link:focus {cursor: pointer}
+
+/* We embed a regular anchor tag inside Dash links so it has an href which
+Bootstrap link-like anchor styles depend and so that the target url can be
+copied. This means we need to disable events on the inner anchor so as to not
+trigger a page-load when clicked. */
+a.link a {pointer-events: none}
+
+#navbar {
+    display: none;
+}
+
+#next-page {
+    position: fixed;
+    top: 0;
+    right: 30px;
+}
 
 #page {
     transition: opacity .25s ease-in-out;
@@ -11,26 +29,4 @@ html { font-size: 2em;}
     margin-bottom: 1em;;
 }
 
-#navbar {
-    display: none;
-}
-
-#navbar:hover {
-    display: block;
-}
-
-#next-page {
-    position: fixed;
-    top: 0;
-    right: 30px;
-}
-
-/* All links generated through Dash should have pointer for hover */
-a.link:hover, a.link:focus {cursor: pointer}
-
-/* We embed a regular anchor tag inside Dash links so it has an href which
-Bootstrap link-like anchor styles depend and so that the target url can be
-copied. This means we need to disable events on the inner anchor so as to not
-trigger a page-load when clicked. */
-a.link a {pointer-events: none}
-
+#page .center {text-align: center;}

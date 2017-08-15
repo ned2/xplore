@@ -10,6 +10,7 @@ class Page:
 
     css_files = []
     js_files = []
+
     
     def __init__(self, app, index, name=None, url=None):
         self.app = app
@@ -40,15 +41,25 @@ class Page:
     def _get_layout(self):
         # use of get_layout method will override a layout attribute 
         if hasattr(self, 'get_layout'):
-            try:
+            self.layout = self.get_layout()
 
-                self.layout = self.get_layout()
-            except Exception as e:
-                raise e
         if not hasattr(self, 'layout'):
             msg = "Page subclasses must either define a 'layout' attribute " \
                   "or a 'get_layout' method"
             raise ValidationException(msg)
+
+        if hasattr(self, 'classes'):
+            new_classes = self.classes
+
+            curr_classes = getattr(self.layout, 'className', None)
+            if curr_classes is not None:
+                new_classes = self.classes + [curr_classes]
+                
+            self.layout.className = " ".join(new_classes)
+
+        if hasattr(self, 'styles'):
+            # TODO
+            pass
         
     def _init_callbacks(self):
         if self.app is not None and hasattr(self, 'callbacks'):

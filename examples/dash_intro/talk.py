@@ -13,22 +13,15 @@ from xplore.layouts import *
 
 class Title(Page):
     name = "Creating Reactive Web Apps in Python"
-
-    # TODO
-    # classes = []
-    # styles = []
+    classes = ['center']
     
     def get_layout(self):
-        layout = page()
-        layout['content-1'] = Markdown(
-"""
-### hello!
-
-Scenario
-* hello blah
-* foo
-"""
-        )
+        content = {
+            'content-1': P('Ned Letcher'),
+            'content-2': P('Ned Letcher'),
+            'content-3': P('Ned Letcher'),
+        }
+        layout = page([1,1,1], content=content)
         return layout
 
 
