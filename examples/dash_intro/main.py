@@ -26,6 +26,23 @@ class DashTalk(Xplorable):
         JavaScript,
         R,
         Python,
+        Dash,
+        DashExample,
+        DashExample2,
+        Architecture,
+        HelloWorld,
+        ReactiveHelloWorld,
+        LayoutsAndComponents,
+        PuttingItTogether
+        Features,
+        FeatureHtml,
+        FeatureMarkdown,
+        FeatureInterval,
+        FeatureState,
+        SinglePageApps,
+        Deployment,
+        Limitations,
+        Conclusion,
     ]
 
 

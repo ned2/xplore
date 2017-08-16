@@ -40,3 +40,8 @@
     display: flex;
     justify-content: center;
 }
+
+#page code {
+    display: block;
+    font-size: 60%;
+}

@@ -69,10 +69,8 @@ eg D3.js, plotly.js, Chart.js etc...
             one_col_row(Img(src='/static/img/chartjs.jpg')),
         ], className='center pad-y')
     ]
+    notes = "What *do* data wranglers use? -- R and Python"
 
-# COMMENT:
-# so what do data scientists frequently code their models in?
-# R and Python
 
 class R(Block):
     name = "R?" 
@@ -110,11 +108,120 @@ class Architecture(Block):
     shape = [[8, 4]]
     content = [[], []]
 
+    
 class HelloWorld(Block):
-    name = "Hello World in Dash" 
+    notes = "Layouts are the first main concept"
+    shape = [[6, 6]]
+    content = [
+        Div(Markdown(
+"""
+    data1 = {'x': [1, 2, 3], 'y': [4, 1, 2],
+               'type': 'bar', 'name': 'SF'}
+    data2 = {'x': [1, 2, 3], 'y': [2, 4, 5],
+               'type': 'bar', 'name': u'Montréal'},
+
+    app = dash.Dash()
+    app.layout = html.Div(
+        children=[
+            html.Div(children='Woah!'),
+
+            dcc.Graph(
+                id='example-graph',
+                figure={
+                    'data': [data1, data1]
+                    'layout': {'title': 'Hello World'}
+                }
+            )
+        ])
+"""), className='code'),
+        Div(children=[
+            Div(children='''Woah!'''),
+            Graph(
+                id='example-graph',
+                figure={
+                    'data': [
+                        {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
+                        {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+                    ],
+                    'layout': {
+                        'title': 'Hello World'
+                    }
+                }
+        )
+        ])
+    ]
+    
+
+class ReactiveHelloWorld(Block):
+    shape = [[8, 4]]
+    content = [[], []]
+    notes = "Callbacks are the second main concepts"
+
+    
+class LayoutsAndComponents(Block):
+    shape = [[8, 4]]
+    content = [[], []]
+    notes = "It all boils down to this"
+
+    
+class PuttingItTogether(Block):
+    notes = "Show how layouts and components fit into original example"
+    shape = [[8, 4]]
+    content = [[], []]
+    
+    
+class Features(Block):
+    name = "Other Goodies" 
     shape = [[8, 4]]
     content = [[], []]
 
     
+class FeatureHtml(Block):
+    name = "All your HTML friends" 
+    shape = [[8, 4]]
+    content = [[], []]
+
+    
+class FeatureMarkdown(Block):
+    name = "Markdown" 
+    shape = [[8, 4]]
+    content = [[], []]
+
+
+class FeatureInterval(Block):
+    name = "Interval Component" 
+    shape = [[8, 4]]
+    content = [[], []]
+
+class FeatureState(Block):
+    name = "State" 
+    shape = [[8, 4]]
+    content = [[], []]
+    
+class SinglePageApps(Block):
+    shape = [[8, 4]]
+    content = [[], []]
+    notes = "This plus some other magic means we can write SPAs"
+
+    
+class Deployment(Block):
+    shape = [[8, 4]]
+    content = [[], []]
+    notes = ""
+
+    
+class Limitations(Block):
+    shape = [[8, 4]]
+    content = [[], []]
+    notes = ""
+
+    
+class Conclusion(Block):
+    name = "A Dashing Future"
+    shape = [[8, 4]]
+    content = [[], []]
+    notes = ""
+
+
 
     
