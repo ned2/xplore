@@ -11,21 +11,14 @@ from slides import *
 # Various issues:
 # 
 # I am automatically prefixing static dir for CSS and JS urls but not for
-# images.
-
-
-
-# TODO for talk
-# -- create back links for each page
-# -- create javascript file to include that binds back and forwards
-#    keys to previous next link (also 'h' for home?) 
+# images specified in the layout 
 
 
 
 class DashTalk(Xplorable):
     title = "Creating Reactive Web Apps in Python"
     css_files = ['css/talk.css']
-    js_files = []
+    js_files = ['js/dash-intro.js']
 
     pages = [
         Title, 

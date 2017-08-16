@@ -16,7 +16,13 @@ a.link a {pointer-events: none}
 #next-page {
     position: fixed;
     top: 0;
-    right: 30px;
+    right: 0;
+}
+
+#prev-page {
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 #page {

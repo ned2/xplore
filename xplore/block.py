@@ -52,6 +52,10 @@ class Block:
         if 'next-page' in self.layout:
             link = dcc.Link(self.layout['next-page'], href=self.next_page.url)
             self.layout['next-page'] = link
+
+        if 'prev-page' in self.layout:
+            link = dcc.Link(self.layout['prev-page'], href=self.prev_page.url)
+            self.layout['prev-page'] = link
             
     def _get_layout(self):
         # use of get_layout method or shape and content attrs will override a
@@ -91,17 +95,17 @@ class Block:
     @property
     def all_css_files(self):
         if hasattr(super(), 'css_class'):
-            return chain(self.__class__.css_files, super().__class__.css_files) 
+            return chain(super().__class__.css_files, self.__class__.css_files) 
         else:
             return self.__class__.css_files
 
     @property
     def all_js_files(self):
-        if hasattr(super(), 'css_class'):
-            return self.__class__.js_files + super().__class__.js_files 
+        if hasattr(super(), 'js_class'):
+            return chain(super().__class__.js_files, self.__class__.js_files) 
         else:
             return self.__class__.js_files
-    
+        
     @property
     def url(self):
         if not hasattr(self, '_url'):

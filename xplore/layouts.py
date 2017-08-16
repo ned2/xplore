@@ -87,9 +87,37 @@ def _add_content(layout, content):
         msgs = "'content' param must be a dict-like object, iterable, " \
                "or Dash Component"
         raise ValidationException(msg)
-    
 
-def make_block_layout(shape=None, content=None, header=True):
+    
+def left_right_nav(left=None, right=None):
+    next_link = Div(left, id='next-page')
+    prev_link = Div(right, id='prev-page')
+
+    # TODO use STATIC_URL_PATH here
+    chevron_size = '1em'
+    if left is None:
+        prev_link.style = {
+            'background': 'url(/static/xplore/svg/left_arrow.svg)',
+            'height': chevron_size,
+            'width': chevron_size,
+            'backgroundRepeat': 'no-repeat',
+            'background-size': chevron_size,
+        }
+
+    if right is None:
+        next_link.style = {
+            'background': 'url(/static/xplore/svg/right_arrow.svg)',
+            'height': chevron_size,
+            'width': chevron_size,
+            'backgroundRepeat': 'no-repeat',
+            'background-size': chevron_size,
+        }
+
+    row = two_col_row((prev_link, next_link))
+    return row
+
+
+def make_block_layout(shape=None, content=None, header=True, nav_links=True):
     if shape is None:
         # default to one row with a single column
         shape = [[12]]
@@ -104,8 +132,9 @@ def make_block_layout(shape=None, content=None, header=True):
         row_list.append(_make_row(cols=row_cols, start_id=start_id))
         start_id += len(row_cols)
 
-    # add the next page link
-    row_list.append(one_col_row(P('Next', id='next-page')))
+    # add the navigation links
+    if nav_links:
+        row_list.append(left_right_nav())
 
     # the page of rows
     new_page = Div(row_list)

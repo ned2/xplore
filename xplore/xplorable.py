@@ -163,10 +163,6 @@ class Xplorable:
                 pass
             return self.routes.get(pathname, default_layout)
         
-        if self.settings.use_bootstrap:
-            self.css_files.extend(self.settings.bootstrap_css_urls)
-            self.js_files.extend(self.settings.bootstrap_js_urls)
-        
         # register xplore's static route with Flask
         @self.app.server.route('{}/xplore/<path:path>'.format(
             self.app.server.static_url_path))
@@ -224,14 +220,19 @@ class Xplorable:
                 # create the page
                 page = cls(self.app, i + 1)
 
-                # link the previous page's 'next_page' attr to this one
                 if prev_page is not None:
+                    # link this page to the last one
+                    page.prev_page = prev_page
                     prev_page.next_page = page
+                    
                 self._page_list.append(page)
                 prev_page = page
 
             # link the last page to the first page    
             prev_page.next_page = self._page_list[0]
+
+            # link the first page to the last page
+            self._page_list[0].prev_page = prev_page
 
             # finalise each page with stuff that has to happen after
             # the creation of all the pages
@@ -245,7 +246,10 @@ class Xplorable:
         if not hasattr(self, '_routes'):
             self._routes = {}
             for page in self.page_list:
+                # register short route: eg /1, /2, /3
                 self.register_route('/'+page.url, page.layout)
+
+                # register long route: eg /the-page-name, /another-page
                 self.register_route('/'+str(page.index), page.layout)
         return self._routes
 
@@ -254,15 +258,38 @@ class Xplorable:
         # returns a generator yielding all CSS files attached to pages used in
         # this story as well as those attached to this story
         pages_css = (page.all_css_files for page in self.page_list)
-        return chain(Xplorable.css_files, self.__class__.css_files, *pages_css)
-    
+
+        if self.settings.use_bootstrap:
+            bootstrap_css = self.settings.bootstrap_css_urls
+        else:
+            bootstrap_css = []
+
+        return chain(
+            bootstrap_css,
+            self.__class__.css_files,
+            Xplorable.css_files,
+            *pages_css
+        )
+
     @property
     def all_js_files(self):
-        # returns a generator yielding all JS files attached to pages used in this
-        # story as well as those attached to this story
+        # returns a generator yielding all JS files attached to pages used in
+        # this story as well as those attached to this story.  make sure user
+        # files come last!
         pages_js = (page.all_js_files for page in self.page_list)
-        return chain(Xplorable.js_files, self.__class__.js_files, *pages_js)
-    
+
+        if self.settings.use_bootstrap:
+            bootstrap_js = self.settings.bootstrap_js_urls
+        else:
+            bootstrap_js = []
+
+        return chain(
+            bootstrap_js,
+            self.__class__.js_files,
+            Xplorable.js_files,
+            *pages_js
+        )
+
     @property
     def nav_items(self):
         return [(page.url, page.name) for page in self.page_list]
