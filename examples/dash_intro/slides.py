@@ -71,7 +71,7 @@ eg D3.js, plotly.js, Chart.js, Vega etc...
 
 
 class R(Page):
-    name = "R -- Shiny!" 
+    name = "R => Shiny!" 
 
 
 class Python(Page):

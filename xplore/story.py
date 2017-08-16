@@ -3,30 +3,36 @@ import os
 import importlib
 import inspect
 from itertools import chain
-from collections import Mapping, defaultdict
+from collections import Mapping
 
 from dash import Dash
 from dash.dependencies import Input, Output
 from dash.development.base_component import Component
 from flask import Flask, send_from_directory
 
-from . import layouts
+from . import layouts, utils
 from .exceptions import ValidationException
 
 
-class AttrDict(defaultdict):
-    """dot.notation access to dictionary attributes"""
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
+# Grand plan:
+#
+# content params should be able to take pages as values. This means that the
+# Page class should be called something else 'Block' maybe?
+#
+# Story subclasses should take a param multi_page. if True, each Block specified
+# in content is an independent page with generated routes. if False, content is
+# laid out according to 'shape', just like in Block class. 
 
-    
-def load_settings(module):
-    settings = AttrDict(lambda :None)
-    for setting in dir(module):
-        if setting.isupper():
-            settings[setting.lower()] = getattr(module, setting)
-    return settings
+# Other ideas:
+# rename Story to Xplorable??
+
+# should Story class just be a Block?? and have it be blocks all the way down??
+# while perhaps might be able to be made to work, there will be attributes that
+# are specific to the whole app but not individual blocks. eg multi_page
+
+# Xplorable takes a param:
+# routes = {name, number, both}
+# generates routes for pages according to respective values
 
 
 class Story:
@@ -74,14 +80,14 @@ class Story:
             # settings.py in the same directory as class inheriting from Story
             # should be automatically used instead of xplore's
             settings_module = importlib.import_module('.settings', __package__)
-            self.settings = load_settings(settings_module)
+            self.settings = utils.load_settings(settings_module)
         elif isinstance(settings, str):
             # a string containing the settings module was supplied
             # TODO: this won't work
             app_path = inspect.getfile(self.__class__)
             sys.path.append(app_path)
             settings_module = importlib.import_module(settings)
-            self.settings = load_settings(settings_module)
+            self.settings = utils.load_settings(settings_module)
         elif isinstance(Mapping):
             # a dict-like object with settings as key-values was supplied
             self.settings = settings

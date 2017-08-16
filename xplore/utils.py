@@ -1,5 +1,5 @@
 import re
-
+from collections import defaultdict
 
 LITTLE_WORDS = {
     'the',
@@ -20,6 +20,21 @@ LITTLE_WORDS = {
     'with',
     'without'
 }
+
+
+class AttrDict(defaultdict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+    
+def load_settings(module):
+    settings = AttrDict(lambda :None)
+    for setting in dir(module):
+        if setting.isupper():
+            settings[setting.lower()] = getattr(module, setting)
+    return settings
 
 
 def slugify(string):

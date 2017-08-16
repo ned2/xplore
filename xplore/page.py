@@ -30,6 +30,12 @@ class Page:
             self._add_classes()
             self._add_styles()
         except ValidationException as e:
+            # An error was encountered while constructing the supplied layout.
+            # Construct a basic layout containing information on the error
+            
+            # TODO this error layout needs to be the global layout attached to
+            # the Story. otherwise for multi page layouts it will just be
+            # embedded somewhere in the middle of the document.
             self.layout = html.P(str(e))   
 
         self._init_callbacks()
