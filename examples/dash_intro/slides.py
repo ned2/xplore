@@ -1,11 +1,11 @@
 from dash_html_components import *
 from dash_core_components import *
 
-from xplore.page import Page
+from xplore import Block
 from xplore.layouts import *
 
 
-class Title(Page):
+class Title(Block):
     name = "Creating Reactive Web Apps in Python"
     classes = ['center']
     shape = [[6, 6]]
@@ -26,7 +26,7 @@ class Title(Page):
     ]
 
     
-class Context(Page):
+class Context(Block):
     name = "So you have some data" 
     shape = [[8, 4]]
     content = [
@@ -48,7 +48,7 @@ But you have a finite
     ]
 
     
-class JavaScript(Page):
+class JavaScript(Block):
     name = "Use a JavaScript library?" 
     shape = [[8, 4]]
     content = [
@@ -70,14 +70,14 @@ eg D3.js, plotly.js, Chart.js, Vega etc...
 # so what do data scientists frequently code their models in?
 
 
-class R(Page):
+class R(Block):
     name = "R => Shiny!" 
 
 
-class Python(Page):
+class Python(Block):
     name = "Python" 
 
     
-class Dash(Page):
+class Dash(Block):
     pass
     

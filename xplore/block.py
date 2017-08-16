@@ -6,10 +6,10 @@ import dash_html_components as html
 from . import utils
 from .exceptions import ValidationException
 
-from .layouts import make_page_layout
+from .layouts import make_block_layout
 
 
-class Page:
+class Block:
 
     css_files = []
     js_files = []
@@ -41,7 +41,7 @@ class Page:
         self._init_callbacks()
 
     def finalise(self):
-        # do things that have to happen after creation of all other pages
+        # do things that have to happen after creation of all other blocks
         # in the story
         self._add_layout_hooks()
 
@@ -63,9 +63,9 @@ class Page:
         elif hasattr(self, 'shape') and hasattr(self, 'content'): 
             # possibly could make content optional; not sure what someone would
             # do with the content-less layout tree
-            layout = make_page_layout(shape=self.shape, content=self.content)
+            layout = make_block_layout(shape=self.shape, content=self.content)
         else:
-            msg = "Page subclasses must either define a 'layout' attribute, " \
+            msg = "Block subclasses must either define a 'layout' attribute, " \
                   "a 'get_layout' method, or both 'shape' and 'content' attributes."
             raise ValidationException(msg)
         return layout

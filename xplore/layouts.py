@@ -6,11 +6,17 @@ from dash.development.base_component import Component
 
 from .exceptions import ValidationException
 
+
+# TODO:
+# push all helper functions into a sub module of layouts such that
+# from xplore.layouts import * will get you only things you might want to use
+
+
 VALID_COLS = set(range(1,13))
 
 
 def main():
-    layout =Div([
+    layout = Div([
         Location(id='url', refresh=False),
         Div(
             id='main',
@@ -55,12 +61,12 @@ def _make_row(cols=None, content=None, start_id=1):
     row = Div(className='row', children=col_list)
 
     if content is not None:
-        add_content(row, content)
+        _add_content(row, content)
 
     return row
 
 
-def add_content(layout, content):
+def _add_content(layout, content):
     # note that we always replace the content-ID element
     # to reduce chance of collisions later
 
@@ -83,7 +89,7 @@ def add_content(layout, content):
         raise ValidationException(msg)
     
 
-def make_page_layout(shape=None, content=None, header=True):
+def make_block_layout(shape=None, content=None, header=True):
     if shape is None:
         # default to one row with a single column
         shape = [[12]]
@@ -105,7 +111,7 @@ def make_page_layout(shape=None, content=None, header=True):
     new_page = Div(row_list)
 
     if content is not None:
-        add_content(new_page, content)
+        _add_content(new_page, content)
 
     return new_page
 

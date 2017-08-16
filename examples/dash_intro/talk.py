@@ -1,12 +1,12 @@
-from xplore.story import Story
+from xplore import Xplorable
 
 from slides import *
+
 
 # Possible dash bug:
 # -- img with no 'src' attribute specified seems to be triggering the
 #    URL callback with a pathname of None
 # -- also Img with a 'style' attr that is a string instead of a dict
-
 
 # Various issues:
 # 
@@ -15,13 +15,14 @@ from slides import *
 
 
 
-# TODO
+# TODO for talk
+# -- create back links for each page
 # -- create javascript file to include that binds back and forwards
 #    keys to previous next link (also 'h' for home?) 
-# -- create default light and dark themes
 
 
-class DashTalk(Story):
+
+class DashTalk(Xplorable):
     title = "Creating Reactive Web Apps in Python"
     css_files = ['css/talk.css']
     js_files = []
@@ -34,6 +35,7 @@ class DashTalk(Story):
 
 
 talk = DashTalk()
+
 
 if __name__ == '__main__':
     talk.app.server.run(debug=True)

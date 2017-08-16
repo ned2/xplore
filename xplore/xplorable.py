@@ -23,8 +23,14 @@ from .exceptions import ValidationException
 # in content is an independent page with generated routes. if False, content is
 # laid out according to 'shape', just like in Block class. 
 
+# This will mean that the ID for each block will need to have an index
+# change page ID setting to something like BLOCK_ID_PREFIX = 'block
+
 # Other ideas:
-# rename Story to Xplorable??
+# 'app' attribute on Xplorable should be 'dash'??
+# to help stop people thinking its the Flask app
+# -- on the other hand, all the dash docs refer to the Dash instance as 'app'
+
 
 # should Story class just be a Block?? and have it be blocks all the way down??
 # while perhaps might be able to be made to work, there will be attributes that
@@ -35,7 +41,7 @@ from .exceptions import ValidationException
 # generates routes for pages according to respective values
 
 
-class Story:
+class Xplorable:
 
     css_files = [
         'xplore/css/xplore.css',
@@ -77,7 +83,7 @@ class Story:
         # load the settings
         if settings is None:
             # no settings supplied, use xplore's defaults.  TODO: a local
-            # settings.py in the same directory as class inheriting from Story
+            # settings.py in the same directory as class inheriting from Xplorable
             # should be automatically used instead of xplore's
             settings_module = importlib.import_module('.settings', __package__)
             self.settings = utils.load_settings(settings_module)
@@ -105,12 +111,11 @@ class Story:
                 self.settings[setting] = value            
 
         # derive and save what is hopefully the path to the file that
-        # defines the Story subclass being used
+        # defines the Xplorable subclass being used
         self.class_path = os.path.abspath(inspect.getfile(self.__class__))
 
         self._init_app(server)
         self._set_index_route()
-        self._validate_attrs()
 
     def _init_app(self, server):
         if server is None:
@@ -197,12 +202,6 @@ class Story:
                 raise ValidationException(msg.format(format(index_page_options)))
         self.register_route('/', self.settings.index_page_layout)
             
-    def _validate_attrs(self):
-        pass
-        # if not hasattr(self, 'app'):
-        #     msg = "Page classes must define an 'app' attribute"
-        #     raise ValidationException(msg)
-
     def _get_asset_path(self, path):
         if path.startswith('http'):
             return path
@@ -255,14 +254,14 @@ class Story:
         # returns a generator yielding all CSS files attached to pages used in
         # this story as well as those attached to this story
         pages_css = (page.all_css_files for page in self.page_list)
-        return chain(Story.css_files, self.__class__.css_files, *pages_css)
+        return chain(Xplorable.css_files, self.__class__.css_files, *pages_css)
     
     @property
     def all_js_files(self):
         # returns a generator yielding all JS files attached to pages used in this
         # story as well as those attached to this story
         pages_js = (page.all_js_files for page in self.page_list)
-        return chain(Story.js_files, self.__class__.js_files, *pages_js)
+        return chain(Xplorable.js_files, self.__class__.js_files, *pages_js)
     
     @property
     def nav_items(self):
