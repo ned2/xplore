@@ -17,13 +17,15 @@ from slides import *
 
 class DashTalk(Xplorable):
     title = "Creating Reactive Web Apps in Python"
-    css_files = ['css/talk.css']
+    css_files = ['css/dash-intro.css']
     js_files = ['js/dash-intro.js']
 
     pages = [
         Title, 
         Context,
         JavaScript,
+        R,
+        Python,
     ]
 
 

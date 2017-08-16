@@ -20,3 +20,23 @@
     padding: 1em;
     border-radius: 15px;
 }
+
+#nav-links {
+    opacity: 0;
+    transition: opacity .25s ease-out;
+}
+
+#nav-links:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.center-y {
+    display: flex;
+    align-items: center;
+}
+
+.center-x {
+    display: flex;
+    justify-content: center;
+}

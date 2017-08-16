@@ -67,7 +67,13 @@ class Block:
         elif hasattr(self, 'shape') and hasattr(self, 'content'): 
             # possibly could make content optional; not sure what someone would
             # do with the content-less layout tree
-            layout = make_block_layout(shape=self.shape, content=self.content)
+            if not hasattr(self, 'row_classes'):
+                self.row_classes = None
+            layout = make_block_layout(
+                shape=self.shape,
+                content=self.content,
+                row_classes=self.row_classes,
+            )
         else:
             msg = "Block subclasses must either define a 'layout' attribute, " \
                   "a 'get_layout' method, or both 'shape' and 'content' attributes."

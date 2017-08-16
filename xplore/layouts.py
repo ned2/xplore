@@ -15,21 +15,27 @@ from .exceptions import ValidationException
 VALID_COLS = set(range(1,13))
 
 
-def main():
+# TODO need to sort out how this interfaces with Xplorable
+def main(settings, nav_items=None):
     layout = Div([
         Location(id='url', refresh=False),
         Div(
             id='main',
             children=[
-                Div(id='navbar'),
-                Div(id='page')
+                Div(id=settings.navbar_element_id),
+                Div(id=settings.page_element_id)
             ]
         )
     ])
+
+    if settings.navbar and nav_items is not None:
+        nav_layout = navbar(nav_items)
+        layout[settings.navbar_element_id].children = nav_layout
+
     return layout
 
 
-def _make_row(cols=None, content=None, start_id=1):
+def _make_row(cols=None, content=None, start_id=1, row_classes=None):
     # note: be careful when leaving content as None
     
     if cols is None:
@@ -58,7 +64,12 @@ def _make_row(cols=None, content=None, start_id=1):
         )
         col_list.append(col)
 
-    row = Div(className='row', children=col_list)
+    if row_classes is None:
+        className = 'row'
+    else:
+        className = 'row {}'.format(' '.join(row_classes))
+
+    row = Div(className=className, children=col_list)
 
     if content is not None:
         _add_content(row, content)
@@ -93,52 +104,72 @@ def left_right_nav(left=None, right=None):
     next_link = Div(left, id='next-page')
     prev_link = Div(right, id='prev-page')
 
+    chevron_size = 2 # em
+    chevron_area = 2*chevron_size
+    shared_styles = {
+        'height': '{}em'.format(chevron_area),
+        'width': '{}em'.format(chevron_area),
+        'backgroundRepeat': 'no-repeat',
+        'backgroundSize': '{}em'.format(chevron_size),
+    }
+
     # TODO use STATIC_URL_PATH here
-    chevron_size = '1em'
+
     if left is None:
         prev_link.style = {
             'background': 'url(/static/xplore/svg/left_arrow.svg)',
-            'height': chevron_size,
-            'width': chevron_size,
-            'backgroundRepeat': 'no-repeat',
-            'background-size': chevron_size,
+            'backgroundPosition': 'left top',
+            **shared_styles
         }
 
     if right is None:
         next_link.style = {
             'background': 'url(/static/xplore/svg/right_arrow.svg)',
-            'height': chevron_size,
-            'width': chevron_size,
-            'backgroundRepeat': 'no-repeat',
-            'background-size': chevron_size,
+            'backgroundPosition': 'right top',
+            **shared_styles
         }
 
     row = two_col_row((prev_link, next_link))
     return row
 
 
-def make_block_layout(shape=None, content=None, header=True, nav_links=True):
+def make_block_layout(shape=None, content=None, header=True, nav_links=True,
+                      row_classes=None):
     if shape is None:
         # default to one row with a single column
         shape = [[12]]
 
+    if row_classes is None:
+        row_classes = [[] for _ in range(len(shape))]
+    elif len(row_classes) != len(shape):
+        msg = "'row_classes' param must be the same length as 'shape' param" 
+        raise ValidationException(msg)
+        
+    row_list = []
+        
+    if nav_links:
+        nav_links = left_right_nav()
+        nav_links.id = 'nav-links'
+        # wouldn't this look nicer as left_right_nav(id='nav-links')??
+        row_list.append(nav_links)
+
     if header:
-        row_list = [one_col_row(H1(id='title'))]
-    else:
-        row_list = []
+        row_list.append(one_col_row(H1(id='title')))
 
     start_id = 1
-    for row_cols in shape:
-        row_list.append(_make_row(cols=row_cols, start_id=start_id))
+    for i, row_cols in enumerate(shape):
+        row = _make_row(
+            cols=row_cols,
+            start_id=start_id,
+            row_classes=row_classes[i]
+        )
+        row_list.append(row)
         start_id += len(row_cols)
-
-    # add the navigation links
-    if nav_links:
-        row_list.append(left_right_nav())
 
     # the page of rows
     new_page = Div(row_list)
 
+    # TODO _add_content should probably be a decorator
     if content is not None:
         _add_content(new_page, content)
 
@@ -162,6 +193,16 @@ def navbar(navbar_items):
     )
     return layout
 
+
+# TODO thread **kwargs through these so that we can easily update
+# attrs such as style, className etc...
+# ....which kinda suggests that these should be classes and they want to
+# be inheriting from a base class, so that we get all that for free???
+# one possibility is that that we just go whole hog and extend from
+# dash.Component. or we could have a light wrapper around component
+
+
+# I think there should definitely at least be Row and Col classes
 
 def one_col_row(content):
     return _make_row(cols=[12], content=content)

@@ -32,8 +32,9 @@ a.link a {pointer-events: none}
 
 #page h1 {
     text-align: center;
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 }
 
 #page .center {text-align: center;}
-#page .vertical-pad .row {margin-bottom: 1em}
+#page .pad-y .row {margin-bottom: 1em}
+#page .pad-y-extra .row {margin-bottom: 2em}

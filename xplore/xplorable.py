@@ -13,6 +13,9 @@ from flask import Flask, send_from_directory
 from . import layouts, utils
 from .exceptions import ValidationException
 
+# TODO: A bug:
+# when two slides have the same name their generates routes clash
+
 
 # Grand plan:
 #
@@ -27,11 +30,16 @@ from .exceptions import ValidationException
 # change page ID setting to something like BLOCK_ID_PREFIX = 'block
 
 # Other ideas:
+
+# Implement themes/addons as Mixins which introduce specific functionality
+# eg PresentationMixin which adds css and js required to turn into a talk.
+# probably include chevrons is css? also sets multi-page to True 
+
 # 'app' attribute on Xplorable should be 'dash'??
 # to help stop people thinking its the Flask app
 # -- on the other hand, all the dash docs refer to the Dash instance as 'app'
 
-
+# not sure about this one
 # should Story class just be a Block?? and have it be blocks all the way down??
 # while perhaps might be able to be made to work, there will be attributes that
 # are specific to the whole app but not individual blocks. eg multi_page
@@ -39,6 +47,10 @@ from .exceptions import ValidationException
 # Xplorable takes a param:
 # routes = {name, number, both}
 # generates routes for pages according to respective values
+
+# as it stands I think maybe I've somewhat coupled the make_block_layout
+# function to the presentation module thing. how to reconcile.
+# maybe it should be part of the PresentationMixin, when it's a thing?
 
 
 class Xplorable:
@@ -78,6 +90,10 @@ class Xplorable:
         'vertical'
     )
 
+    # TODO
+    # setting hierarchy:
+    #  -- settings param
+
     # TODO -- add navbar orientation flag, horizontal/vertical
     def __init__(self, app=None, server=None, settings=None, **settings_kwargs):
         # load the settings
@@ -89,7 +105,7 @@ class Xplorable:
             self.settings = utils.load_settings(settings_module)
         elif isinstance(settings, str):
             # a string containing the settings module was supplied
-            # TODO: this won't work
+            # does this work?
             app_path = inspect.getfile(self.__class__)
             sys.path.append(app_path)
             settings_module = importlib.import_module(settings)
@@ -136,13 +152,8 @@ class Xplorable:
         self.app.title = self.title
         self.app.css.config.serve_locally = self.settings.serve_locally
         self.app.css.config.serve_locally = self.settings.serve_locally
-        self.app.layout = layouts.main()
-        
-        if self.settings.navbar:
-            navbar_id = self.settings.navbar_element_id
-            nav_layout = layouts.navbar(self.nav_items)
-            self.app.layout[navbar_id].children = nav_layout
-            
+        self.app.layout = layouts.main(self.settings, nav_items=self.nav_items)
+                    
         # Dash complains about callbacks on nonexistent elements otherwise
         self.app.config.supress_callback_exceptions = True
 
