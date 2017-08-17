@@ -129,6 +129,7 @@ class Xplorable:
         # derive and save what is hopefully the path to the file that
         # defines the Xplorable subclass being used
         self.class_path = os.path.abspath(inspect.getfile(self.__class__))
+        self.project_path = os.path.dirname(self.class_path) 
 
         self._init_app(server)
         self._set_index_route()
@@ -143,7 +144,7 @@ class Xplorable:
 
             # prefix the 'static_folder' param with the root of the user's project
             flask_kwargs['static_folder'] = os.path.join(
-                os.path.dirname(self.class_path), 
+                self.project_path,
                 flask_kwargs.get('static_folder', 'static')
             )
             server = Flask(__name__, **flask_kwargs)
@@ -151,11 +152,13 @@ class Xplorable:
         self.app = Dash(name=__name__, server=server)
         self.app.title = self.title
         self.app.css.config.serve_locally = self.settings.serve_locally
-        self.app.css.config.serve_locally = self.settings.serve_locally
-        self.app.layout = layouts.main(self.settings, nav_items=self.nav_items)
-                    
+        self.app.scripts.config.serve_locally = self.settings.serve_locally
+
         # Dash complains about callbacks on nonexistent elements otherwise
         self.app.config.supress_callback_exceptions = True
+
+        self.app.layout = layouts.main(self.settings, nav_items=self.nav_items)
+                    
 
         # register the router callback with Dash
         @self.app.callback(Output(self.settings.page_element_id, 'children'),
@@ -229,7 +232,7 @@ class Xplorable:
             prev_page = None
             for i, cls in enumerate(self.pages):
                 # create the page
-                page = cls(self.app, i + 1)
+                page = cls(self.app, i + 1, self.project_path)
 
                 if prev_page is not None:
                     # link this page to the last one

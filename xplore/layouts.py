@@ -6,6 +6,8 @@ from dash.development.base_component import Component
 
 from .exceptions import ValidationException
 
+# TODO:
+# Warning when number of columns in shape does not much number in content
 
 # TODO:
 # push all helper functions into a sub module of layouts such that
@@ -35,7 +37,7 @@ def main(settings, nav_items=None):
     return layout
 
 
-def _make_row(cols=None, content=None, start_id=1, row_classes=None):
+def _make_row(cols=None, content=None, start_id=1, row_classes=None, style=None):
     # note: be careful when leaving content as None
     
     if cols is None:
@@ -71,6 +73,9 @@ def _make_row(cols=None, content=None, start_id=1, row_classes=None):
 
     row = Div(className=className, children=col_list)
 
+    if style is not None:
+        row.style = style
+        
     if content is not None:
         _add_content(row, content)
 
@@ -204,12 +209,12 @@ def navbar(navbar_items):
 
 # I think there should definitely at least be Row and Col classes
 
-def one_col_row(content):
-    return _make_row(cols=[12], content=content)
+def one_col_row(content, style=None):
+    return _make_row(cols=[12], content=content, style=style)
 
 
-def two_col_row(content):
-    return _make_row(cols=[6, 6], content=content)
+def two_col_row(content, style=None):
+    return _make_row(cols=[6, 6], content=content, style=style)
 
 
 def three_col_row(content):

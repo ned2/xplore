@@ -17,8 +17,8 @@
 }
 
 #page .note {
-    padding: 1em;
-    border-radius: 15px;
+    padding: 0.5em;
+    border-radius: 10px;
 }
 
 #nav-links {
@@ -44,4 +44,18 @@
 #page code {
     display: block;
     font-size: 60%;
+}
+
+.reveal {
+    opacity: 0;
+    transition: opacity .25s ease-out;
+}
+
+.reveal:hover {
+    opacity: 1;
+}
+
+
+#page .Select *, #page .Select-value * {
+    white-space: pre;
 }

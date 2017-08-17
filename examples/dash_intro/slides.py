@@ -1,5 +1,11 @@
+import os
+
+import pandas as pd
+import dash
+import plotly.graph_objs as go
 from dash_html_components import *
 from dash_core_components import *
+
 
 from xplore import Block
 from xplore.layouts import *
@@ -42,7 +48,7 @@ class Context(Block):
 """),
         Markdown(
 """
-But you have a finite
+But you have finite
 * time
 * people
 * capabilities
@@ -81,37 +87,172 @@ class R(Block):
     
 class Python(Block):
     name = "Python" 
-    shape = [[8, 4]]
-    content = [[], []]
+    shape = [[9, 3]]
+    row_classes = [['center-y']]
+    content = [
+        Markdown(
+"""
+* **Jupyter**
+    - Might already be using notebook for analysis  
+    - *But* can't expose kernel to the world 
+        - Notebook Server + Dashboard Server
+        - *But* does not scale
+* **Bokeh and Bokeh Server**
+    - Good option
+    - Some complexity involved?
+* **Dash**...
+"""),
+        Div([
+            one_col_row(Img(src='/static/img/jupyter.svg', style={'width':'100%'})),
+            one_col_row(Img(src='/static/img/bokeh.png')),
+            one_col_row(Img(src='/static/img/dash.svg')),
+        ], className='center pad-y')
+    ]
+
 
     
 class Dash(Block):
-    name = "Dash" 
     shape = [[8, 4]]
-    content = [[], []]
+    row_classes = [['center-y']]
+    content = [
+        Markdown(
+"""
+* Python framework for building analytical web applications
+* Enables construction of modern reactive web-apps
+    - Using just Python!
+* Built on
+    - Flask (Python web framework)
+    - React (JavaScript interface library)
+"""),
+        Div([
+            one_col_row(Img(src='/static/img/dash.svg', style={'width':'100%'})),
+            one_col_row(Img(src='/static/img/plotly.png')),
+        ], className='center pad-y-extra')]
 
     
 class DashExample(Block):
-    name = "Let's have a look" 
-    shape = [[8, 4]]
-    content = [[], []]
+    name = "A Reactive Viz"
+    shape = [
+        [4, 8],
+        [12]
+    ]
+    row_classes = [
+        ['center-y'],
+        []
+    ]
 
+    def get_data(self):
+        self.data = {}
+        csv_path = os.path.join(self.project_path, 'data', 'indicators.csv.gz')
+        self.data['df'] = pd.read_csv(os.path.join(csv_path)) 
     
-class DashExample2(Block):
-    name = "What's going on?" 
-    shape = [[8, 4]]
-    content = [[], []]
+    @property
+    def content(self):
+        df = self.data['df']
+        available_indicators = df['Indicator Name'].unique()
+        content = {
+            'content-3': Div(Markdown(
+"""
+    function(input1, input2, input3, input4, input5)  ==>  new_data
+"""), className='center reveal', style={'font-size':'150%', 'margin-top':'2rem'}),
+            'content-1':
+            Div([
+                one_col_row(Div([
+                    Div('y-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
+                    Dropdown(
+                        id='yaxis-column',
+                        options=[{'label': i, 'value': i} for i in available_indicators],
+                        value='Life expectancy at birth, total (years)'
+                    ),
+                    RadioItems(
+                        id='yaxis-type',
+                        options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+                        value='Linear',
+                        labelStyle={'display': 'inline-block'}
+                    )
+                ], style={})),
+                one_col_row(Div([
+                    Div('x-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
+                    Dropdown(
+                        id='xaxis-column',
+                        options=[{'label': i, 'value': i} for i in available_indicators],
+                        value='Fertility rate, total (births per woman)'
+                    ),
+                    RadioItems(
+                        id='xaxis-type',
+                        options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+                        value='Linear',
+                        labelStyle={'display': 'inline-block'}
+                    )
+                ], style={}))
+            ], className='pad-y', style={'font-size':'x-large'}),
+            'content-2' :
+            Div([
+                Graph(id='indicator-graphic'),
+                Slider(
+                    id='year--slider',
+                    min=df['Year'].min(),
+                    max=df['Year'].max(),
+                    value=df['Year'].max(),
+                    step=None,
+                    marks={str(year): str(year) for year in df['Year'].unique()}
+                )
+            ])
+        }
+        return content
 
-    
+    def callbacks(self, app):
+        @app.callback(
+            dash.dependencies.Output('indicator-graphic', 'figure'),
+            [dash.dependencies.Input('xaxis-column', 'value'),
+             dash.dependencies.Input('yaxis-column', 'value'),
+             dash.dependencies.Input('xaxis-type', 'value'),
+             dash.dependencies.Input('yaxis-type', 'value'),
+             dash.dependencies.Input('year--slider', 'value')])
+        def update_graph(xaxis_column_name, yaxis_column_name,
+                         xaxis_type, yaxis_type,
+                         year_value):
+            df = self.data['df']
+            dff = df[df['Year'] == year_value]
+
+            return {
+                'data': [go.Scatter(
+                    x=dff[dff['Indicator Name'] == xaxis_column_name]['Value'],
+                    y=dff[dff['Indicator Name'] == yaxis_column_name]['Value'],
+                    text=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'],
+                    mode='markers',
+                    marker={
+                        'size': 15,
+                        'opacity': 0.5,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    }
+                )],
+                'layout': go.Layout(
+                    xaxis={
+                        'title': xaxis_column_name,
+                        'type': 'linear' if xaxis_type == 'Linear' else 'log'
+                    },
+                    yaxis={
+                        'title': yaxis_column_name,
+                        'type': 'linear' if yaxis_type == 'Linear' else 'log'
+                    },
+                    margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
+                    hovermode='closest'
+                )
+            }
+
+        
 class Architecture(Block):
     name = "The Big Picture" 
-    shape = [[8, 4]]
-    content = [[], []]
+    shape = [[12]]
+    classes = ['center']
+    content = one_col_row(Img(src='/static/img/dash-architecture.svg', style={'width':'70%'}))
 
     
 class HelloWorld(Block):
     notes = "Layouts are the first main concept"
     shape = [[6, 6]]
+    row_classes = [['center-y']]
     content = [
         Div(Markdown(
 """
@@ -123,19 +264,19 @@ class HelloWorld(Block):
     app = dash.Dash()
     app.layout = html.Div(
         children=[
-            html.Div(children='Woah!'),
-
+            html.H2('Woah!', style={'color':'red'}),
             dcc.Graph(
                 id='example-graph',
                 figure={
                     'data': [data1, data1]
                     'layout': {'title': 'Hello World'}
                 }
-            )
+            ),
+            html.P('We made a thing.'),
         ])
 """), className='code'),
         Div(children=[
-            Div(children='''Woah!'''),
+            H2('Woah!', style={'color':'red'}),
             Graph(
                 id='example-graph',
                 figure={
@@ -147,71 +288,119 @@ class HelloWorld(Block):
                         'title': 'Hello World'
                     }
                 }
-        )
+        ),
+            P('We made a thing.')
+            
         ])
     ]
     
 
+    
+class Layouts(Block):
+    shape = [[6, 2, 2, 2]]
+    row_classes = [['center-y']]
+    notes = "We're just building up (resuable) layout trees, like a DOM"
+    content = [
+        Markdown(
+"""
+* *Reusable* Component trees
+* Components are Python classes for
+    * any HTML element
+    * special Dash components (eg Graph)
+* Converted to JSON and sent to browser
+"""),
+        Div(['Div',
+            Ul([
+                Li('H2'),
+                Li('Graph'),
+                Li('P')
+            ])
+        ], className='clt'),
+        Div(['Div',
+            Ul([
+                Li('H1'),
+                Li(['Ul', Ul([Li('Li'), Li('Li'), Li('Li')])]),
+            ])
+        ], className='clt'),
+        Div(['Div',
+            Ul([
+                Li('Markdown'),
+                Li('Img'),
+                Li('Img')
+            ])
+        ], className='clt')
+    ]
+
+    
+
+# have all HTML elemeents
+    
 class ReactiveHelloWorld(Block):
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
     notes = "Callbacks are the second main concepts"
 
     
-class LayoutsAndComponents(Block):
+class Callbacks(Block):
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
-    notes = "It all boils down to this"
 
-    
-class PuttingItTogether(Block):
-    notes = "Show how layouts and components fit into original example"
+    # callback to change the data
+    # maybe also a callback to insert an image.
+
+class LayoutsAndCallbacks(Block):
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
+
+    # just show the layout tree and the original function thing
     
     
 class Features(Block):
     name = "Other Goodies" 
     shape = [[8, 4]]
-    content = [[], []]
-
-    
-class FeatureHtml(Block):
-    name = "All your HTML friends" 
-    shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
 
     
 class FeatureMarkdown(Block):
     name = "Markdown" 
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
 
 
 class FeatureInterval(Block):
     name = "Interval Component" 
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
 
 class FeatureState(Block):
     name = "State" 
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
     
 class SinglePageApps(Block):
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
     notes = "This plus some other magic means we can write SPAs"
 
     
 class Deployment(Block):
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
     notes = ""
 
     
 class Limitations(Block):
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
     notes = ""
 
@@ -219,6 +408,7 @@ class Limitations(Block):
 class Conclusion(Block):
     name = "A Dashing Future"
     shape = [[8, 4]]
+    row_classes = [['center-y']]
     content = [[], []]
     notes = ""
 

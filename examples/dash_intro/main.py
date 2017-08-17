@@ -17,7 +17,10 @@ from slides import *
 
 class DashTalk(Xplorable):
     title = "Creating Reactive Web Apps in Python"
-    css_files = ['css/dash-intro.css']
+    css_files = [
+        'css/tree.css',
+        'css/dash-intro.css'
+    ]
     js_files = ['js/dash-intro.js']
 
     pages = [
@@ -28,14 +31,12 @@ class DashTalk(Xplorable):
         Python,
         Dash,
         DashExample,
-        DashExample2,
         Architecture,
         HelloWorld,
+        Layouts,
         ReactiveHelloWorld,
-        LayoutsAndComponents,
-        PuttingItTogether
+        Callbacks,
         Features,
-        FeatureHtml,
         FeatureMarkdown,
         FeatureInterval,
         FeatureState,

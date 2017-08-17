@@ -8,6 +8,19 @@ from .exceptions import ValidationException
 
 from .layouts import make_block_layout
 
+# note: current gotcha with Block class is that layout trees in content
+# attribute will be shared across all instances of the class becuase
+# content is a class attribute 
+# workaround1 -- define content as @property method
+# workaround2 -- create deep copy of the content layout on creation of
+#                each instance.
+# both seem suboptimal
+
+# another issue:
+# currently Block class can't really be instantiated manually, only in the context
+# of Xplorable, due to dependence on app and index params
+# -- reassess
+
 
 class Block:
 
@@ -15,15 +28,21 @@ class Block:
     js_files = []
 
     
-    def __init__(self, app, index, name=None, url=None):
+    def __init__(self, app, index, project_path, name=None, url=None):
         self.app = app
         self.index = index
 
+        # TODO -- this is an ugly hack
+        self.project_path = project_path
+        
         if name is not None:
             self._name = name
 
         if url is not None:
             self._url = url
+
+        if hasattr(self, 'get_data'):
+            self.get_data()
 
         try:
             self.layout = self._get_layout()
@@ -37,7 +56,7 @@ class Block:
             # the Story. otherwise for multi page layouts it will just be
             # embedded somewhere in the middle of the document.
             self.layout = html.P(str(e))   
-
+            
         self._init_callbacks()
 
     def finalise(self):
