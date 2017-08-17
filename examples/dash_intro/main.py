@@ -32,7 +32,7 @@ class DashTalk(Xplorable):
         Dash,
         DashExample,
         Architecture,
-        HelloWorld,
+        HelloWorld2,
         Layouts,
         ReactiveHelloWorld,
         Callbacks,

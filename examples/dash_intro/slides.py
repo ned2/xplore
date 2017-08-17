@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import numpy
 import dash
 import plotly.graph_objs as go
 from dash_html_components import *
@@ -253,47 +254,41 @@ class HelloWorld(Block):
     notes = "Layouts are the first main concept"
     shape = [[6, 6]]
     row_classes = [['center-y']]
+    
     content = [
         Div(Markdown(
 """
-    data1 = {'x': [1, 2, 3], 'y': [4, 1, 2],
-               'type': 'bar', 'name': 'SF'}
-    data2 = {'x': [1, 2, 3], 'y': [2, 4, 5],
-               'type': 'bar', 'name': u'Montréal'},
+    data = numpy.random.normal(size=1000) 
 
     app = dash.Dash()
+
     app.layout = html.Div(
         children=[
-            html.H2('Woah!', style={'color':'red'}),
+            html.H2('Woah', style={'color':'red'}),
             dcc.Graph(
                 id='example-graph',
                 figure={
-                    'data': [data1, data1]
+                    'data': [data],
                     'layout': {'title': 'Hello World'}
                 }
             ),
-            html.P('We made a thing.'),
-        ])
+            html.P('We made a thing!')
+        ]
+    )
 """), className='code'),
         Div(children=[
-            H2('Woah!', style={'color':'red'}),
+            H2('Woah', style={'color':'red'}),
             Graph(
                 id='example-graph',
                 figure={
-                    'data': [
-                        {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                        {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-                    ],
-                    'layout': {
-                        'title': 'Hello World'
-                    }
+                    'data': [go.Histogram(x=numpy.random.normal(size=10000))],
+                    'layout': {'title': 'Hello World'}
                 }
         ),
-            P('We made a thing.')
-            
+            P('We made a thing!')
+
         ])
     ]
-    
 
     
 class Layouts(Block):
@@ -407,7 +402,9 @@ class Limitations(Block):
     row_classes = [['center-y']]
     content = [[], []]
     notes = ""
-
+# You're stuck using plotly
+# (unless you want to build custom components!)
+    
     
 class Conclusion(Block):
     name = "A Dashing Future"
