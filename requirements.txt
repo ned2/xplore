@@ -15,6 +15,7 @@ decorator==4.1.2          # via plotly, traitlets
 flask-compress==1.4.0     # via dash
 flask-seasurf==0.2.2      # via dash
 flask==0.12.2             # via dash, flask-compress, flask-seasurf
+gunicorn==19.7.1
 idna==2.6                 # via requests
 ipython-genutils==0.2.0   # via nbformat, traitlets
 itsdangerous==0.24        # via flask
