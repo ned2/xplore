@@ -350,6 +350,10 @@ class Callbacks(Block):
     # callback to change the data
     # maybe also a callback to insert an image.
 
+
+# TODO: slides saying callbacks are for DOM also?
+
+
 class LayoutsAndCallbacks(Block):
     shape = [[8, 4]]
     row_classes = [['center-y']]
