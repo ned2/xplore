@@ -262,19 +262,17 @@ class HelloWorld(Block):
 
     app = dash.Dash()
 
-    app.layout = html.Div(
-        children=[
-            html.H2('Woah', style={'color':'red'}),
-            dcc.Graph(
-                id='example-graph',
-                figure={
-                    'data': [data],
-                    'layout': {'title': 'Hello World'}
-                }
-            ),
-            html.P('We made a thing!')
-        ]
-    )
+    app.layout = html.Div([
+        html.H2('Woah', style={'color':'red'}),
+        dcc.Graph(
+            id='example-graph',
+            figure={
+                'data': [data],
+                'layout': {'title': 'Hello World'}
+            }
+        ),
+        html.P('We made a thing!')
+    ])
 """), className='code'),
         Div(children=[
             H2('Woah', style={'color':'red'}),
@@ -293,7 +291,6 @@ class HelloWorld(Block):
     
 class Layouts(Block):
     shape = [[6, 2, 2, 2]]
-    row_classes = [['center-y']]
     notes = "We're just building up (resuable) layout trees, like a DOM"
     content = [
         Markdown(
@@ -327,15 +324,56 @@ class Layouts(Block):
     ]
 
     
-
-# have all HTML elemeents
-    
 class ReactiveHelloWorld(Block):
-    shape = [[8, 4]]
+    shape = [[6, 6]]
     row_classes = [['center-y']]
-    content = [[], []]
-    notes = "Callbacks are the second main concepts"
 
+    @property
+    def content(self):
+        content = [
+            Div(Markdown(
+"""
+    app = dash.Dash()
+    app.layout = html.Div([
+                Graph(id='graph'),
+                Slider(
+                    id='slider',
+                    min=10,
+                    max=1000,
+                    value=10,
+                    step=100
+                )
+            ])
+
+    @app.callback(
+        Output('graph', 'figure'),
+        [Input('slider', 'value')])
+    def update_grapph(size):
+        data = numpy.random.normal(size=size)
+        return {'data': [go.Histogram(x=data)]}
+"""), className='code'),
+            Div([
+                Graph(id='graph'),
+                Slider(
+                    id='slider',
+                    min=10,
+                    max=1000,
+                    value=10,
+                    step=100
+                )
+            ])
+        ]
+        return content
+
+    def callbacks(self, app):
+
+        @app.callback(
+        dash.dependencies.Output('graph', 'figure'),
+        [dash.dependencies.Input('slider', 'value')])
+        def update_grapph(size):
+            data = numpy.random.normal(size=size)
+            return {'data': [go.Histogram(x=data)]}
+    
     
 class Callbacks(Block):
     shape = [[8, 4]]
@@ -350,19 +388,27 @@ class Callbacks(Block):
 
 
 class LayoutsAndCallbacks(Block):
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
+    name = "Layouts & Callbacks"
+    shape = [[4, 8]]
+    row_classes = [['center-y', 'pad-top']]
+    content = [Div([
+            Div(['Div',
+                 Ul([
+                     Li('H2'),
+                     Li('Graph'),
+                     Li('P')
+                 ])
+            ], className='clt')            
+        ], style={'margin-left':'3em'}),
+            Div([
+                Markdown(
+"""
+function(input1, input2, ...)  ==>  Graph.figure
+""")], className='center')]
+
 
     # just show the layout tree and the original function thing
     
-    
-class Features(Block):
-    name = "Other Goodies" 
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
-
     
 class FeatureMarkdown(Block):
     name = "Markdown" 
@@ -377,41 +423,81 @@ class FeatureInterval(Block):
     row_classes = [['center-y']]
     content = [[], []]
 
-class FeatureState(Block):
-    name = "State" 
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
-    
 class SinglePageApps(Block):
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
+    shape = [[4, 8]]
+    row_classes = [['center-y', 'pad-top']]
     content = [[], []]
     notes = "This plus some other magic means we can write SPAs"
-
+    content = ['A simple URL router', Markdown(
+"""
+    app.callback(Output('main, 'children'), [Input('url', 'route')])
+    def display_page(route):
+        if route = '/':
+            return home_layout
+        elif route = '/viz1':
+            return viz1_layout
+        elif route = '/viz2':
+            return viz2_layout
+        else:
+            return page_not_found_layout        
+""")]
     
 class Deployment(Block):
+    name = "Deploying on the cloud"
     shape = [[8, 4]]
     row_classes = [['center-y']]
-    content = [[], []]
-    notes = ""
+    content = [
+        Markdown(
+"""
+* Dash/Flask comes with a built-in web server
+    - only meant for development
+    - can only handle one request at a time
+* You need a WSGI server
+    - Gunicorn
+    - uWSGI
+    - Apache + mod_wsgi (use mod_wsgi-express)
+* Will work on basically any hosting environment
+"""),
+        Markdown(
+"""
+Just Google:\\
+"Hosting Flask apps on X"\\
+Where X = AWS, Google Cloud, Azure, etc...
+""", className='note center')
+    ]
+        
 
     
 class Limitations(Block):
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
-    notes = ""
-# You're stuck using plotly
-# (unless you want to build custom components!)
+    shape = [[12]]
+    content = Markdown(
+"""
+* Only supports plotly.js visualisations
+    * but can create your own React components
+* Involves creating a different than used for analysis
+* Every reactive event requires a web request
+    * slower for remotely hosted apps
+    * For layout changes can create React components
+    * May be forthcoming features to help
+""")
     
     
 class Conclusion(Block):
     name = "A Dashing Future"
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
-    notes = ""
+    shape = [[12]]
+    content = Markdown(
+"""
+* Dash enables creation interactive web apps in pure Python
+    - designed for analytics applications
+    - scalable
+    - modern framework (without writing a line of JavaScript!)
+* Teams can create reusable libraries of apps and layout components
+* For
+    - analysts
+    - researchers
+    - communicators
+    - enthusiasts 
+""")
 
 
 
