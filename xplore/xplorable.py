@@ -92,6 +92,9 @@ class Xplorable:
         'vertical'
     )
 
+    def __cal__(self):
+        return self.app.server
+        
     # TODO
     # setting hierarchy:
     #  -- settings param
