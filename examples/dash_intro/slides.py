@@ -376,9 +376,26 @@ class ReactiveHelloWorld(Block):
     
     
 class Callbacks(Block):
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
+    shape = [[3, 9]]
+    content = [[], Div(Markdown(
+"""
+    app = dash.Dash()
+    app.layout = html.Div([
+                Graph(id='graph'),
+                Slider(
+                    id='slider',
+                    min=10,
+                    max=1000,
+                    value=10,
+                    step=100
+                )
+            ])
+
+    @app.callback(Output('graph', 'figure'), [Input('slider', 'value')])
+    def update_grapph(size):
+        data = numpy.random.normal(size=size)
+        return {'data': [go.Histogram(x=data)]}
+"""))]
 
     # callback to change the data
     # maybe also a callback to insert an image.
@@ -411,17 +428,32 @@ function(input1, input2, ...)  ==>  Graph.figure
     
     
 class FeatureMarkdown(Block):
-    name = "Markdown" 
-    shape = [[8, 4]]
+    name = "Markdown"
+    shape = [[6, 6]]
     row_classes = [['center-y']]
-    content = [[], []]
+    content = [
+        Markdown(
+'''
+    app.layout = Markdown(
+    """
+    Markdown
+    ========================================
+    An easy to read and write **markup** language
+    * automatically converted to HTML
+    * makes inline content creation _much_ easier
+    """)
+''')
+        ,
+        Markdown(
+"""
+Markdown
+--------
+An easy to read and write **markup** language
+* automatically converted to HTML
+* makes inline content creation _much_ easier
+""")]
 
 
-class FeatureInterval(Block):
-    name = "Interval Component" 
-    shape = [[8, 4]]
-    row_classes = [['center-y']]
-    content = [[], []]
 
 class SinglePageApps(Block):
     shape = [[4, 8]]
