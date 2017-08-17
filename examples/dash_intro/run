@@ -10,4 +10,4 @@ echo "Starting gunicorn on port ${PORT}..."
 
 export PYTHONPATH=$(pwd)/../../
 
-gunicorn -w 1 --bind 0.0.0.0:${PORT} main:talk:server
+gunicorn -w 1 --bind 0.0.0.0:${PORT} main:talk.app.server
