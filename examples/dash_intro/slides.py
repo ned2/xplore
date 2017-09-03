@@ -19,8 +19,7 @@ class Title(Block):
     row_classes = [['center-y']]
     content = [
         #one_col_row(Div(style={'height':'1em'})),
-        Div(Markdown(
-"""
+        Div(Markdown("""
 #### Ned Letcher
     nedned.net
     @nletcher
@@ -33,9 +32,9 @@ class Title(Block):
         ]
     ]
 
-    
+
 class Context(Block):
-    name = "So you have some data" 
+    name = "So you have some data"
     shape = [[8, 4]]
     row_classes = [['center-y']]
     content = [
@@ -56,7 +55,7 @@ But you have finite
 """, className='warning note')
     ]
 
-    
+
 class JavaScript(Block):
     name = "JavaScript library?" 
     shape = [[8, 4]]
@@ -80,22 +79,22 @@ eg D3.js, plotly.js, Chart.js etc...
 
 
 class R(Block):
-    name = "R?" 
+    name = "R?"
     shape = [[12]]
     classes = ['center']
     content = one_col_row(Img(src='/static/img/shiny.png', style={'width':'50%'}))
 
-    
+
 class Python(Block):
-    name = "Python" 
+    name = "Python"
     shape = [[9, 3]]
     row_classes = [['center-y']]
     content = [
         Markdown(
 """
 * **Jupyter**
-    - Might already be using notebook for analysis  
-    - *But* can't expose kernel to the world 
+    - Might already be using notebook for analysis
+    - *But* can't expose kernel to the world
         - Notebook Server + Dashboard Server
         - *But* does not scale
 * **Bokeh and Bokeh Server**
@@ -111,7 +110,7 @@ class Python(Block):
     ]
 
 
-    
+
 class Dash(Block):
     shape = [[8, 4]]
     row_classes = [['center-y']]
@@ -130,7 +129,7 @@ class Dash(Block):
             one_col_row(Img(src='/static/img/plotly.png')),
         ], className='center pad-y-extra')]
 
-    
+
 class DashExample(Block):
     name = "A Reactive Viz"
     shape = [
@@ -145,8 +144,8 @@ class DashExample(Block):
     def get_data(self):
         self.data = {}
         csv_path = os.path.join(self.project_path, 'data', 'indicators.csv.gz')
-        self.data['df'] = pd.read_csv(os.path.join(csv_path)) 
-    
+        self.data['df'] = pd.read_csv(os.path.join(csv_path))
+
     @property
     def content(self):
         df = self.data['df']
@@ -242,23 +241,23 @@ class DashExample(Block):
                 )
             }
 
-        
+
 class Architecture(Block):
-    name = "The Big Picture" 
+    name = "The Big Picture"
     shape = [[12]]
     classes = ['center']
     content = one_col_row(Img(src='/static/img/dash-architecture.svg', style={'width':'70%'}))
 
-    
+
 class HelloWorld(Block):
     notes = "Layouts are the first main concept"
     shape = [[6, 6]]
     row_classes = [['center-y']]
-    
+
     content = [
         Div(Markdown(
 """
-    data = numpy.random.normal(size=1000) 
+    data = numpy.random.normal(size=1000)
 
     app = dash.Dash()
 
@@ -282,13 +281,13 @@ class HelloWorld(Block):
                     'data': [go.Histogram(x=numpy.random.normal(size=10000))],
                     'layout': {'title': 'Hello World'}
                 }
-        ),
+            ),
             P('We made a thing!')
 
         ])
     ]
 
-    
+
 class Layouts(Block):
     shape = [[6, 2, 2, 2]]
     notes = "We're just building up (resuable) layout trees, like a DOM"
@@ -302,28 +301,28 @@ class Layouts(Block):
 * Converted to JSON and sent to browser
 """),
         Div(['Div',
-            Ul([
-                Li('H2'),
-                Li('Graph'),
-                Li('P')
-            ])
-        ], className='clt'),
+             Ul([
+                 Li('H2'),
+                 Li('Graph'),
+                 Li('P')
+             ])
+            ], className='clt'),
         Div(['Div',
-            Ul([
-                Li('H1'),
-                Li(['Ul', Ul([Li('Li'), Li('Li'), Li('Li')])]),
-            ])
-        ], className='clt'),
+             Ul([
+                 Li('H1'),
+                 Li(['Ul', Ul([Li('Li'), Li('Li'), Li('Li')])]),
+             ])
+            ], className='clt'),
         Div(['Div',
-            Ul([
-                Li('Markdown'),
-                Li('Img'),
-                Li('Img')
-            ])
-        ], className='clt')
+             Ul([
+                 Li('Markdown'),
+                 Li('Img'),
+                 Li('Img')
+             ])
+            ], className='clt')
     ]
 
-    
+
 class ReactiveHelloWorld(Block):
     shape = [[6, 6]]
     row_classes = [['center-y']]
@@ -368,13 +367,13 @@ class ReactiveHelloWorld(Block):
     def callbacks(self, app):
 
         @app.callback(
-        dash.dependencies.Output('graph', 'figure'),
-        [dash.dependencies.Input('slider', 'value')])
+            dash.dependencies.Output('graph', 'figure'),
+            [dash.dependencies.Input('slider', 'value')])
         def update_grapph(size):
             data = numpy.random.normal(size=size)
             return {'data': [go.Histogram(x=data)]}
-    
-    
+
+
 class Callbacks(Block):
     shape = [[3, 9]]
     content = [[], Div(Markdown(
@@ -409,24 +408,24 @@ class LayoutsAndCallbacks(Block):
     shape = [[4, 8]]
     row_classes = [['center-y', 'pad-top']]
     content = [Div([
-            Div(['Div',
-                 Ul([
-                     Li('H2'),
-                     Li('Graph'),
-                     Li('P')
-                 ])
-            ], className='clt')            
-        ], style={'margin-left':'3em'}),
-            Div([
-                Markdown(
+        Div(['Div',
+             Ul([
+                 Li('H2'),
+                 Li('Graph'),
+                 Li('P')
+             ])
+            ], className='clt')
+    ], style={'margin-left':'3em'}),
+               Div([
+                   Markdown(
 """
 function(input1, input2, ...)  ==>  Graph.figure
 """)], className='center')]
 
 
     # just show the layout tree and the original function thing
-    
-    
+
+
 class FeatureMarkdown(Block):
     name = "Markdown"
     shape = [[6, 6]]
@@ -471,9 +470,9 @@ class SinglePageApps(Block):
         elif route = '/viz2':
             return viz2_layout
         else:
-            return page_not_found_layout        
+            return page_not_found_layout
 """)]
-    
+
 class Deployment(Block):
     name = "Deploying on the cloud"
     shape = [[8, 4]]
@@ -497,23 +496,23 @@ Just Google:\\
 Where X = AWS, Google Cloud, Azure, etc...
 """, className='note center')
     ]
-        
 
-    
+
+
 class Limitations(Block):
     shape = [[12]]
     content = Markdown(
 """
 * Only supports plotly.js visualisations
     * but can create your own React components
-* Involves creating a different than used for analysis
+* Involves creating a different artefact than used for analysis
 * Every reactive event requires a web request
     * slower for remotely hosted apps
     * For layout changes can create React components
     * May be forthcoming features to help
 """)
-    
-    
+
+
 class Conclusion(Block):
     name = "A Dashing Future"
     shape = [[12]]
@@ -530,7 +529,3 @@ class Conclusion(Block):
     - communicators
     - enthusiasts 
 """)
-
-
-
-    

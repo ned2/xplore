@@ -38,7 +38,6 @@ class DashTalk(Xplorable):
         Callbacks,
         LayoutsAndCallbacks,
         FeatureMarkdown,
-        #FeatureInterval,
         SinglePageApps,
         Deployment,
         Limitations,
@@ -50,4 +49,4 @@ talk = DashTalk()
 
 
 if __name__ == '__main__':
-    talk.app.server.run(debug=True)
+    talk.app.server.run(debug=False, host='0.0.0.0')

@@ -7,7 +7,7 @@
 certifi==2017.7.27.1      # via requests
 chardet==3.0.4            # via requests
 click==6.7                # via flask
-dash-core-components==0.12.2
+dash-core-components==0.12.4
 dash-html-components==0.7.0
 dash-renderer==0.7.4
 dash==0.17.7
@@ -23,10 +23,10 @@ jinja2==2.9.6             # via flask
 jsonschema==2.6.0         # via nbformat
 jupyter-core==4.3.0       # via nbformat
 markupsafe==1.0           # via jinja2
-nbformat==4.3.0           # via plotly
+nbformat==4.4.0           # via plotly
 numpy==1.13.1             # via pandas
 pandas==0.20.3
-plotly==2.0.14
+plotly==2.0.15
 python-dateutil==2.6.1    # via pandas
 pytz==2017.2              # via pandas, plotly
 requests==2.18.4          # via plotly

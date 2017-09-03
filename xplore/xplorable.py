@@ -92,8 +92,8 @@ class Xplorable:
         'vertical'
     )
 
-    def __cal__(self):
-        return self.app.server
+    def __call__(self, *args):
+        return self.app.server(*args)
         
     # TODO
     # setting hierarchy:
