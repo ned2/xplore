@@ -39,6 +39,7 @@ class DashTalk(Xplorable):
         LayoutsAndCallbacks,
         FeatureMarkdown,
         SinglePageApps,
+        Extensible,
         Deployment,
         Limitations,
         Conclusion,

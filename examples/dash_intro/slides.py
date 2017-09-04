@@ -34,14 +34,14 @@ class Title(Block):
 
 
 class Context(Block):
-    name = "So you have some data"
+    name = "The Problem"
     shape = [[8, 4]]
     row_classes = [['center-y']]
     content = [
         Markdown(
 """
 * You've done some analysis
-* You want to communicate results with a visualisation
+* Want to communicate results with a visualisation
 * It needs to be
     * _interactive_
     * _shareable_
@@ -79,7 +79,7 @@ eg D3.js, plotly.js, Chart.js etc...
 
 
 class R(Block):
-    name = "R?"
+    name = "R"
     shape = [[12]]
     classes = ['center']
     content = one_col_row(Img(src='/static/img/shiny.png', style={'width':'50%'}))
@@ -117,9 +117,9 @@ class Dash(Block):
     content = [
         Markdown(
 """
-* Python framework for building analytical web applications
+* Python framework for building data-driven web applications
 * Enables construction of modern reactive web-apps
-    - Using just Python!
+    - __*Using just Python!!*__
 * Built on
     - Flask (Python web framework)
     - React (JavaScript interface library)
@@ -153,7 +153,7 @@ class DashExample(Block):
         content = {
             'content-3': Div(Markdown(
 """
-    function(input1, input2, input3, input4, input5)  ==>  new_data
+    function(input1, input2, input3, ...)  ==>  new_data
 """), className='center reveal', style={'font-size':'150%', 'margin-top':'2rem'}),
             'content-1':
             Div([
@@ -473,6 +473,20 @@ class SinglePageApps(Block):
             return page_not_found_layout
 """)]
 
+
+class Extensible(Block):
+    name = "Extensible Components"
+    shape = [[12]]
+    content = Markdown(
+"""
+* Dash layout components are React components
+   - Can create custom own Dash layout components
+   - existing React components can be converted to Dash components
+   - Plotly has a toolchain for streamlining creation components  
+   - Can be added to the open source Dash library for all to benefit
+""")
+
+    
 class Deployment(Block):
     name = "Deploying on the cloud"
     shape = [[8, 4]]
@@ -486,8 +500,9 @@ class Deployment(Block):
 * You need a WSGI server
     - Gunicorn
     - uWSGI
-    - Apache + mod_wsgi (use mod_wsgi-express)
+    - mod_wsgi (Apache)
 * Will work on basically any hosting environment
+    - potentially even Lambda (using Zappa)!!
 """),
         Markdown(
 """
@@ -505,7 +520,6 @@ class Limitations(Block):
 """
 * Only supports plotly.js visualisations
     * but can create your own React components
-* Involves creating a different artefact than used for analysis
 * Every reactive event requires a web request
     * slower for remotely hosted apps
     * For layout changes can create React components
