@@ -11,4 +11,4 @@ echo "Starting gunicorn on port ${PORT}..."
 SCRIPTPATH=$(cd $(dirname $0); pwd -P)
 export PYTHONPATH=${SCRIPTPATH}/../../:${PYTHONPATH}
 
-gunicorn --worker-class gevent --workers 1 --threads 4 --reload --bind 0.0.0.0:${PORT} main:talk.app.server
+gunicorn --worker-class gevent --preload --workers 2 --threads 4 --reload --bind 0.0.0.0:${PORT} main:talk.app.server

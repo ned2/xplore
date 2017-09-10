@@ -154,13 +154,13 @@ class Xplorable:
             )
             server = Flask(__name__, **flask_kwargs)
 
-        self.app = Dash(name=__name__, server=server)
+        self.app = Dash(name=__name__, server=server, csrf_protect=True)
         self.app.title = self.title
         self.app.css.config.serve_locally = self.settings.serve_locally
         self.app.scripts.config.serve_locally = self.settings.serve_locally
 
         # Dash complains about callbacks on nonexistent elements otherwise
-        self.app.config.supress_callback_exceptions = True
+        self.app.config.suppress_callback_exceptions = True
 
         self.app.layout = layouts.main(self.settings, nav_items=self.nav_items)
                     

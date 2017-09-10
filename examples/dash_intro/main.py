@@ -47,7 +47,7 @@ class DashTalk(Xplorable):
 
 
 talk = DashTalk()
-
+talk.app.server.debug = True
 
 if __name__ == '__main__':
     talk.app.server.run(debug=False, host='0.0.0.0')
