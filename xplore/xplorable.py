@@ -154,7 +154,7 @@ class Xplorable:
             )
             server = Flask(__name__, **flask_kwargs)
 
-        self.app = Dash(name=__name__, server=server, csrf_protect=True)
+        self.app = Dash(name=__name__, server=server)
         self.app.title = self.title
         self.app.css.config.serve_locally = self.settings.serve_locally
         self.app.scripts.config.serve_locally = self.settings.serve_locally

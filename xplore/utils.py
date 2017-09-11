@@ -1,5 +1,10 @@
 import re
-from collections import defaultdict
+from collections import defaultdict, Mapping, Iterable
+
+from dash.development.base_component import Component
+
+from .exceptions import ValidationException
+
 
 LITTLE_WORDS = {
     'the',
@@ -66,3 +71,25 @@ def camel_case_to_title(token):
         else:
             new_words.append(word)
     return " ".join(new_words)
+
+
+def add_content(layout, content):
+    # note that we always replace the content-ID element
+    # to reduce chance of collisions later
+
+    if isinstance(content, Component):
+        # content is a single Dash Component
+        layout['content-1'] = content
+    elif isinstance(content, Mapping):
+        # content is a dict-like object with element-ID keys and components as
+        # values
+        for id_name, value in content.items():
+            layout[id_name] = value
+    elif isinstance(content, Iterable):
+        # content is an iterable
+        for i, value in enumerate(content):
+            layout['content-{}'.format(i+1)] = value
+    else:
+        msgs = "'content' param must be a dict-like object, iterable, " \
+               "or Dash Component"
+        raise ValidationException(msg)

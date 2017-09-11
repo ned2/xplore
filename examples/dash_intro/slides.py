@@ -10,25 +10,25 @@ from dash_core_components import *
 
 from xplore import Block
 from xplore.layouts import *
+from xplore.components import Col, Row
 
 
 class Title(Block):
     name = "Creating Reactive Web Apps in Python"
     classes = ['center']
     shape = [[6, 6]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
-        #one_col_row(Div(style={'height':'1em'})),
         Div(Markdown("""
 #### Ned Letcher
     nedned.net
     @nletcher
 """), style={'text-align':'left'}),
         [
-            one_col_row(Img(src='/static/img/forefront.jpg',
-                            style={'margin-bottom':'2em'})),
-            one_col_row(Img(src='/static/img/melbourne-uni.png',
-                            style={'width':'35%'}))
+            Row(Img(src='/static/img/forefront.jpg',
+                    style={'margin-bottom':'2em'})),
+            Row(Img(src='/static/img/melbourne-uni.png',
+                    style={'width':'35%'}))
         ]
     ]
 
@@ -36,7 +36,7 @@ class Title(Block):
 class Context(Block):
     name = "The Problem"
     shape = [[8, 4]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
         Markdown(
 """
@@ -59,7 +59,7 @@ But you have finite
 class JavaScript(Block):
     name = "JavaScript library?" 
     shape = [[8, 4]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
         Markdown(
 """
@@ -70,9 +70,9 @@ eg D3.js, plotly.js, Chart.js etc...
 * full stack developers??
 """),
         Div([
-            one_col_row(Img(src='/static/img/d3.png', style={'width':'30%'})),
-            one_col_row(Img(src='/static/img/plotly.png')),
-            one_col_row(Img(src='/static/img/chartjs.jpg')),
+            Row(Img(src='/static/img/d3.png', style={'width':'30%'})),
+            Row(Img(src='/static/img/plotly.png')),
+            Row(Img(src='/static/img/chartjs.jpg')),
         ], className='center pad-y')
     ]
     notes = "What *do* data wranglers use? -- R and Python"
@@ -82,13 +82,13 @@ class R(Block):
     name = "R"
     shape = [[12]]
     classes = ['center']
-    content = one_col_row(Img(src='/static/img/shiny.png', style={'width':'50%'}))
+    content = Row(Img(src='/static/img/shiny.png', style={'width':'50%'}))
 
 
 class Python(Block):
     name = "Python"
     shape = [[9, 3]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
         Markdown(
 """
@@ -103,17 +103,16 @@ class Python(Block):
 * **Dash**...
 """),
         Div([
-            one_col_row(Img(src='/static/img/jupyter.svg', style={'width':'100%'})),
-            one_col_row(Img(src='/static/img/bokeh.png')),
-            one_col_row(Img(src='/static/img/dash.svg')),
+            Row(Img(src='/static/img/jupyter.svg', style={'width':'100%'})),
+            Row(Img(src='/static/img/bokeh.png')),
+            Row(Img(src='/static/img/dash.svg')),
         ], className='center pad-y')
     ]
 
 
-
 class Dash(Block):
     shape = [[8, 4]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
         Markdown(
 """
@@ -125,8 +124,8 @@ class Dash(Block):
     - React (JavaScript interface library)
 """),
         Div([
-            one_col_row(Img(src='/static/img/dash.svg', style={'width':'100%'})),
-            one_col_row(Img(src='/static/img/plotly.png')),
+            Row(Img(src='/static/img/dash.svg', style={'width':'100%'})),
+            Row(Img(src='/static/img/plotly.png')),
         ], className='center pad-y-extra')]
 
 
@@ -136,10 +135,7 @@ class DashExample(Block):
         [4, 8],
         [12]
     ]
-    row_classes = [
-        ['center-y'],
-        []
-    ]
+    row_classes = ['center-y', '']
 
     def get_data(self):
         self.data = {}
@@ -157,7 +153,7 @@ class DashExample(Block):
 """), className='center reveal', style={'font-size':'150%', 'margin-top':'2rem'}),
             'content-1':
             Div([
-                one_col_row(Div([
+                Row(Div([
                     Div('y-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
                     Dropdown(
                         id='yaxis-column',
@@ -171,7 +167,7 @@ class DashExample(Block):
                         labelStyle={'display': 'inline-block'}
                     )
                 ], style={})),
-                one_col_row(Div([
+                Row(Div([
                     Div('x-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
                     Dropdown(
                         id='xaxis-column',
@@ -246,13 +242,13 @@ class Architecture(Block):
     name = "The Big Picture"
     shape = [[12]]
     classes = ['center']
-    content = one_col_row(Img(src='/static/img/dash-architecture.svg', style={'width':'70%'}))
+    content = Row(Img(src='/static/img/dash-architecture.svg', style={'width':'70%'}))
 
 
 class HelloWorld(Block):
     notes = "Layouts are the first main concept"
     shape = [[6, 6]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
 
     content = [
         Div(Markdown(
@@ -325,7 +321,7 @@ class Layouts(Block):
 
 class ReactiveHelloWorld(Block):
     shape = [[6, 6]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
 
     @property
     def content(self):
@@ -406,7 +402,7 @@ class Callbacks(Block):
 class LayoutsAndCallbacks(Block):
     name = "Layouts & Callbacks"
     shape = [[4, 8]]
-    row_classes = [['center-y', 'pad-top']]
+    row_classes = ['center-y pad-top']
     content = [Div([
         Div(['Div',
              Ul([
@@ -456,7 +452,7 @@ An easy to read and write **markup** language
 
 class SinglePageApps(Block):
     shape = [[4, 8]]
-    row_classes = [['center-y', 'pad-top']]
+    row_classes = [['center-y pad-top']]
     content = [[], []]
     notes = "This plus some other magic means we can write SPAs"
     content = ['A simple URL router', Markdown(
@@ -490,7 +486,7 @@ class Extensible(Block):
 class Deployment(Block):
     name = "Deploying on the cloud"
     shape = [[8, 4]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
         Markdown(
 """
