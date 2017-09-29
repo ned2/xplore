@@ -7,9 +7,9 @@
 certifi==2017.7.27.1      # via requests
 chardet==3.0.4            # via requests
 click==6.7                # via flask
-dash-core-components==0.12.4
+dash-core-components==0.12.7
 dash-html-components==0.7.0
-dash-renderer==0.9.0
+dash-renderer==0.11.0
 dash==0.18.3
 decorator==4.1.2          # via plotly, traitlets
 flask-compress==1.4.0     # via dash
@@ -32,7 +32,7 @@ plotly==2.0.15
 python-dateutil==2.6.1    # via pandas
 pytz==2017.2              # via pandas, plotly
 requests==2.18.4          # via plotly
-six==1.10.0               # via plotly, python-dateutil, traitlets
+six==1.11.0               # via plotly, python-dateutil, traitlets
 traitlets==4.3.2          # via jupyter-core, nbformat
 urllib3==1.22             # via requests
 werkzeug==0.12.2          # via flask

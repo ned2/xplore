@@ -75,7 +75,6 @@ eg D3.js, plotly.js, Chart.js etc...
             Row(Img(src='/static/img/chartjs.jpg')),
         ], className='center pad-y')
     ]
-    notes = "What *do* data wranglers use? -- R and Python"
 
 
 class R(Block):
@@ -246,7 +245,6 @@ class Architecture(Block):
 
 
 class HelloWorld(Block):
-    notes = "Layouts are the first main concept"
     shape = [[6, 6]]
     row_classes = ['center-y']
 
@@ -286,7 +284,6 @@ class HelloWorld(Block):
 
 class Layouts(Block):
     shape = [[6, 2, 2, 2]]
-    notes = "We're just building up (resuable) layout trees, like a DOM"
     content = [
         Markdown(
 """
@@ -453,8 +450,6 @@ An easy to read and write **markup** language
 class SinglePageApps(Block):
     shape = [[4, 8]]
     row_classes = [['center-y pad-top']]
-    content = [[], []]
-    notes = "This plus some other magic means we can write SPAs"
     content = ['A simple URL router', Markdown(
 """
     app.callback(Output('main, 'children'), [Input('url', 'route')])
