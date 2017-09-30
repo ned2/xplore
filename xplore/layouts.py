@@ -5,6 +5,7 @@ from dash.development.base_component import Component
 from .exceptions import ValidationException
 from .components import Col, Row
 from .utils import add_content
+from . import settings
 
 # TODO:
 # Warning when number of columns in shape does not much number in content
@@ -14,26 +15,37 @@ from .utils import add_content
 # from xplore.layouts import * will get you only things you might want to use
 
 
-VALID_COLS = set(range(1,13))
-
-
 # TODO need to sort out how this interfaces with Xplorable
-def main(settings, nav_items=None):
+def main(nav_items=None):
     layout = Div([
         Location(id='url', refresh=False),
         Div(
             id='main',
             children=[
-                Div(id=settings.navbar_element_id),
-                Div(id=settings.page_element_id)
+                Div(id=settings.NAVBAR_ELEMENT_ID),
+                Div(id=settings.PAGE_ELEMENT_ID)
             ]
         )
     ])
 
-    if settings.navbar and nav_items is not None:
+    if nav_items is not None:
         nav_layout = navbar(nav_items)
-        layout[settings.navbar_element_id].children = nav_layout
+        layout[settings.NAVBAR_ELEMENT_ID].children = nav_layout
 
+    return layout
+
+
+def nav_li(href, text, active=False):
+    className = 'nav-item nav-link' + (' active' if active else ''),
+    return Li(link(href, text), className=className)
+
+
+def navbar(navbar_items):
+    lis = [nav_li(href, text) for href, text in navbar_items]
+    layout = Nav(
+        className='',
+        children=Ul(lis, className='nav nav-pills'),
+    )
     return layout
 
 
@@ -113,20 +125,6 @@ def make_block_layout(content=None, shape=None, header=True, nav_links=True,
 
 def link(href, text):
     return Link(A(text, href=href), href=href, className='link')
-
-
-def nav_li(href, text, active=False):
-    className = 'nav-item nav-link' + (' active' if active else ''),
-    return Li(link(href, text), className=className)
-
-
-def navbar(navbar_items):
-    lis = [nav_li(href, text) for href, text in navbar_items]
-    layout = Nav(
-        className='',
-        children=Ul(lis, className='nav nav-pills'),
-    )
-    return layout
 
 
 def page_not_found(pathname):

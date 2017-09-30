@@ -3,4 +3,4 @@
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 export PYTHONPATH=${SCRIPTPATH}/../../:${PYTHONPATH}
 
-python main.py
+python ${SCRIPTPATH}/main.py

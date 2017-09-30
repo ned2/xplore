@@ -1,5 +1,7 @@
 import sys
 import os
+import random
+import string
 import importlib
 import inspect
 from itertools import chain
@@ -10,13 +12,11 @@ from dash.dependencies import Input, Output
 from dash.development.base_component import Component
 from flask import Flask, send_from_directory
 
-from . import layouts, utils
+from . import layouts, utils, settings
 from .exceptions import ValidationException
 
 # TODO: A bug:
-# when two slides have the same name their generates routes clash
-
-
+# when two slides have the same name their generated routes clash
 
 
 # Grand plan:
@@ -57,136 +57,74 @@ from .exceptions import ValidationException
 
 class Xplorable:
 
-    css_files = [
-        'xplore/css/xplore.css',
-        'xplore/font/source-sans-pro/source-sans-pro.css',
-    ]
-    js_files = []
-
-    # available settings that can be configured
-    settings_attrs = (
-        'page_element_id',
-        'navbar_element_id',
-        'index_page_layout',
-        'index_page_type',
-        'route_not_found_layout',
-        'root_path',
-        'serve_locally',
-        'use_bootstrap',
-        'bootstrap_js_urls',
-        'bootstrap_css_urls',
-        'navbar',
-        'static_url_path',
-        'static_folder',
-    )
-
-    # subset of 'settings_attrs' that should be passed onto Flask
-    flask_setting_attrs = (
-        'static_url_path',
-        'static_folder'
-    )
-    
-    index_page_options = (
-        'outline',
-        'first',
-        'vertical'
-    )
-
     def __call__(self, *args):
+        # This makes it so that this object can be a WSGI app target
         return self.app.server(*args)
         
-    # TODO
-    # setting hierarchy:
-    #  -- settings param
+    def __init__(
+            self,
+            server=None,
+            index_page_type='first',
+            route_not_found_layout=None):
 
-    # TODO -- add navbar orientation flag, horizontal/vertical
-    def __init__(self, app=None, server=None, settings=None, **settings_kwargs):
-        # load the settings
-        if settings is None:
-            # no settings supplied, use xplore's defaults.  TODO: a local
-            # settings.py in the same directory as class inheriting from Xplorable
-            # should be automatically used instead of xplore's
-            settings_module = importlib.import_module('.settings', __package__)
-            self.settings = utils.load_settings(settings_module)
-        elif isinstance(settings, str):
-            # a string containing the settings module was supplied
-            # does this work?
-            app_path = inspect.getfile(self.__class__)
-            sys.path.append(app_path)
-            settings_module = importlib.import_module(settings)
-            self.settings = utils.load_settings(settings_module)
-        elif isinstance(Mapping):
-            # a dict-like object with settings as key-values was supplied
-            self.settings = settings
-        else:
-            msg = "'settings' parameter must a string containing the name of " \
-                  "a settings module or a dict-like object containing " \
-                  "setting names and values."
-            raise ValidationException(msg)
-
-        for setting in self.settings_attrs:
-            # update current settings with those specified as parameters these
-            # will override any settings supplied with the 'settings' parameter
-            value = settings_kwargs.get(setting, None)
-            if value is not None:
-                self.settings[setting] = value            
+        self.route_not_found_layout = route_not_found_layout
+        self.index_page_type = index_page_type
 
         # derive and save what is hopefully the path to the file that
         # defines the Xplorable subclass being used
         self.class_path = os.path.abspath(inspect.getfile(self.__class__))
-        self.project_path = os.path.dirname(self.class_path) 
-
-        self._init_app(server)
-        self._set_index_route()
-
-    def _init_app(self, server):
+        self.project_path = os.path.dirname(self.class_path)
+        
         if server is None:
-            # extract flask specific params from the settings
-            flask_kwargs = {}
-            for param in self.flask_setting_attrs:
-                if self.settings[param] is not None:
-                    flask_kwargs[param] = self.settings[param]
-
-            # prefix the 'static_folder' param with the root of the user's project
-            flask_kwargs['static_folder'] = os.path.join(
-                self.project_path,
-                flask_kwargs.get('static_folder', 'static')
-            )
-            server = Flask(__name__, **flask_kwargs)
+            server = self._make_flask_server()
 
         self.app = Dash(name=__name__, server=server)
-        self.app.title = self.title
-        self.app.css.config.serve_locally = self.settings.serve_locally
-        self.app.scripts.config.serve_locally = self.settings.serve_locally
 
+        # TODO: need to clean all this up
+        
         # Dash complains about callbacks on nonexistent elements otherwise
         self.app.config.suppress_callback_exceptions = True
+        
+        self._init_pages()
+        self._init_app()
+        self._register_routes()
+        self._set_index_route()
+        
+        self.app.layout = layouts.main(nav_items=self.nav_items)
 
-        self.app.layout = layouts.main(self.settings, nav_items=self.nav_items)
-                    
+        # finalise each page with stuff that has to happen after
+        # the creation of all the pages
+        for page in self._page_list:
+            page.finalise()
+
+    def _make_flask_server(self):
+        server = Flask(
+            __name__,
+            static_folder=os.path.join(self.project_path, settings.STATIC_PATH)
+        )
+        return server
+            
+    def _init_app(self):
+        self.app.title = self.title
 
         # register the router callback with Dash
-        @self.app.callback(Output(self.settings.page_element_id, 'children'),
+        @self.app.callback(Output(settings.PAGE_ELEMENT_ID, 'children'),
               [Input('url', 'pathname')])
         def display_page(pathname):
-            # users can supply a default layout which can either be
-            # a dash component. a callable that returns a dash layout
-            if self.settings.route_not_found_layout is None:
+            if self.route_not_found_layout is None:
                 default_layout = layouts.page_not_found(pathname)
-            elif isinstance(self.settings.route_not_found_layout, Component):
-                default_layout = self.settings.route_not_found_layout
-            elif callable(self.settings.route_not_found_layout):
-                default_layout = self.settings.route_not_found_layout(pathname)
             else:
-                # TODO raise validation error
-                pass
+                default_layout = self.route_not_found_layout(pathname)
+
+            # look up the path name from the routes
             return self.routes.get(pathname, default_layout)
         
         # register xplore's static route with Flask
         @self.app.server.route('{}/xplore/<path:path>'.format(
             self.app.server.static_url_path))
         def send_static(path):
-            static_path = os.path.join(self.xplore_base_path, 'static')
+            static_path = os.path.join(self.xplore_base_path,
+                                       settings.STATIC_PATH)
             return send_from_directory(static_path, path)
 
         # register all CSS files with app
@@ -203,73 +141,72 @@ class Xplorable:
         # if index_layout is specified, then we use this for the index page
         # of the story. otherwise, a layout is created according to the value 
         # of settings.index_page_type
-        if self.settings.index_page_layout is None:
-            if self.settings.index_page_type == 'first':
-                self.settings.index_page_layout = self.page_list[0].layout
-            elif self.settings.index_page_type == 'outline':
-                # TODO
-                pass
-            elif self.settings.index_page_type == 'vertical':
-                # TODO
-                pass
-            else:
-                msg = "'index_page_type' param must be one of {}"
-                raise ValidationException(msg.format(format(index_page_options)))
-        self.register_route('/', self.settings.index_page_layout)
+        if self.index_page_type == 'first':
+            self.index_page_layout = self.page_list[0].layout
+        elif self.index_page_type == 'outline':
+            # TODO
+            pass
+        elif self.index_page_type == 'vertical':
+            # TODO
+            pass
+        else:
+            msg = "'index_page_type' param must be one of {}"
+            raise ValidationException(msg.format("'first', 'outline', or 'vertical'"))
+        self._register_route('/', self.index_page_layout)
             
     def _get_asset_path(self, path):
         if path.startswith('http'):
             return path
         return '{}/{}'.format(self.app.server.static_url_path.rstrip('/'), path)
 
-    def register_route(self, route, layout):
-        self.routes[route] = layout
+    def _init_pages(self):
+        self._page_list = []
+        prev_page = None
+        for i, cls in enumerate(self.pages):
+            # create the page
+            page = cls(self.app, i + 1, self.project_path)
 
+            if prev_page is not None:
+                # link this page to the last one
+                page.prev_page = prev_page
+                prev_page.next_page = page
+
+            self._page_list.append(page)
+            prev_page = page
+
+        # link the last page to the first page    
+        prev_page.next_page = self._page_list[0]
+
+        # link the first page to the last page
+        self._page_list[0].prev_page = prev_page
+
+    def _register_routes(self):
+        self._routes = {}
+        for page in self.page_list:
+            # register long route: eg /the-page-name, /another-page
+            route = self._register_route(page.url, page.layout)
+            # update the page url in case it was assigned a different route 
+            page.url = route
+            # register short route: eg /1, /2, /3
+            self._register_route(f'/{str(page.index)}', page.layout)
+
+    def _register_route(self, route, layout):
+        if route in self.routes:
+            suffix = ''.join(random.choices(string.ascii_letters, k=5))
+            route = f'{route}-{suffix}'
+        self.routes[route] = layout
+        return route
+    
     @property
     def xplore_base_path(self):
         return os.path.dirname(os.path.realpath(__file__))
     
     @property
     def page_list(self):
-        """create the pages from the list of Page classes in 'pages' attr"""
-        if not hasattr(self, '_page_list'):
-            self._page_list = []
-            prev_page = None
-            for i, cls in enumerate(self.pages):
-                # create the page
-                page = cls(self.app, i + 1, self.project_path)
-
-                if prev_page is not None:
-                    # link this page to the last one
-                    page.prev_page = prev_page
-                    prev_page.next_page = page
-                    
-                self._page_list.append(page)
-                prev_page = page
-
-            # link the last page to the first page    
-            prev_page.next_page = self._page_list[0]
-
-            # link the first page to the last page
-            self._page_list[0].prev_page = prev_page
-
-            # finalise each page with stuff that has to happen after
-            # the creation of all the pages
-            for page in self._page_list:
-                page.finalise()
-                
         return self._page_list
 
     @property
     def routes(self):
-        if not hasattr(self, '_routes'):
-            self._routes = {}
-            for page in self.page_list:
-                # register short route: eg /1, /2, /3
-                self.register_route('/'+page.url, page.layout)
-
-                # register long route: eg /the-page-name, /another-page
-                self.register_route('/'+str(page.index), page.layout)
         return self._routes
 
     @property
@@ -278,15 +215,9 @@ class Xplorable:
         # this story as well as those attached to this story
         pages_css = (page.all_css_files for page in self.page_list)
 
-        if self.settings.use_bootstrap:
-            bootstrap_css = self.settings.bootstrap_css_urls
-        else:
-            bootstrap_css = []
-
         return chain(
-            bootstrap_css,
+            settings.CSS_FILES,
             self.__class__.css_files,
-            Xplorable.css_files,
             *pages_css
         )
 
@@ -297,15 +228,9 @@ class Xplorable:
         # files come last!
         pages_js = (page.all_js_files for page in self.page_list)
 
-        if self.settings.use_bootstrap:
-            bootstrap_js = self.settings.bootstrap_js_urls
-        else:
-            bootstrap_js = []
-
         return chain(
-            bootstrap_js,
+            settings.JS_FILES,
             self.__class__.js_files,
-            Xplorable.js_files,
             *pages_js
         )
 

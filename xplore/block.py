@@ -134,8 +134,12 @@ class Block:
     @property
     def url(self):
         if not hasattr(self, '_url'):
-            self._url = utils.slugify(self.name)
+            self._url = f'/{utils.slugify(self.name)}'
         return self._url
+
+    @url.setter
+    def url(self, url):
+        self._url = url
         
     @property
     def name(self):

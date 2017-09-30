@@ -43,11 +43,12 @@ class DashTalk(Xplorable):
         Deployment,
         Limitations,
         Conclusion,
+        Conclusion,
     ]
 
 
 talk = DashTalk()
-talk.app.server.debug = True
+
 
 if __name__ == '__main__':
     talk.app.server.run(debug=True, host='0.0.0.0')
