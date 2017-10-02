@@ -15,10 +15,6 @@ from flask import Flask, send_from_directory
 from . import layouts, utils, settings
 from .exceptions import ValidationException
 
-# TODO: A bug:
-# when two slides have the same name their generated routes clash
-
-
 # Grand plan:
 #
 # content params should be able to take pages as values. This means that the
@@ -57,10 +53,6 @@ from .exceptions import ValidationException
 
 class Xplorable:
 
-    def __call__(self, *args):
-        # This makes it so that this object can be a WSGI app target
-        return self.app.server(*args)
-        
     def __init__(
             self,
             server=None,
@@ -70,43 +62,53 @@ class Xplorable:
         self.route_not_found_layout = route_not_found_layout
         self.index_page_type = index_page_type
 
-        # derive and save what is hopefully the path to the file that
-        # defines the Xplorable subclass being used
-        self.class_path = os.path.abspath(inspect.getfile(self.__class__))
-        self.project_path = os.path.dirname(self.class_path)
-        
         if server is None:
             server = self._make_flask_server()
 
         self.app = Dash(name=__name__, server=server)
-
-        # TODO: need to clean all this up
-        
-        # Dash complains about callbacks on nonexistent elements otherwise
         self.app.config.suppress_callback_exceptions = True
-        
         self._init_pages()
         self._init_app()
         self._register_routes()
-        self._set_index_route()
-        
-        self.app.layout = layouts.main(nav_items=self.nav_items)
 
-        # finalise each page with stuff that has to happen after
-        # the creation of all the pages
-        for page in self._page_list:
+        # finalise each page with stuff that has to happen after the creation of
+        # all the pages
+        for page in self.page_list:
             page.finalise()
 
     def _make_flask_server(self):
-        server = Flask(
+        return Flask(
             __name__,
             static_folder=os.path.join(self.project_path, settings.STATIC_PATH)
         )
-        return server
             
+    def _init_pages(self):
+        self.page_list = []
+        prev_page = None
+        for i, cls in enumerate(self.pages):
+            # create the page
+            page = cls(self.app, i + 1, self.project_path)
+
+            if prev_page is not None:
+                # link this page to the last one
+                page.prev_page = prev_page
+                prev_page.next_page = page
+
+            self.page_list.append(page)
+            prev_page = page
+
+        # link the last page to the first page    
+        prev_page.next_page = self.page_list[0]
+
+        # link the first page to the last page
+        self.page_list[0].prev_page = prev_page
+        
     def _init_app(self):
         self.app.title = self.title
 
+        # add the layout
+        self.app.layout = layouts.main(nav_items=self.nav_items)
+        
         # register the router callback with Dash
         @self.app.callback(Output(settings.PAGE_ELEMENT_ID, 'children'),
               [Input('url', 'pathname')])
@@ -137,6 +139,25 @@ class Xplorable:
             full_js_path = self._get_asset_path(js_path) 
             self.app.scripts.append_script({"external_url": full_js_path})
 
+    def _register_routes(self):
+        self.routes = {}
+        for page in self.page_list:
+            # register long route: eg /the-page-name, /another-page
+            route = self._register_route(page.url, page.layout)
+            # update the page url in case it was assigned a different route 
+            page.url = route
+            # register short route: eg /1, /2, /3
+            self._register_route(f'/{str(page.index)}', page.layout)
+
+        self._set_index_route()
+            
+    def _register_route(self, route, layout):
+        if route in self.routes:
+            suffix = ''.join(random.choices(string.ascii_letters, k=5))
+            route = f'{route}-{suffix}'
+        self.routes[route] = layout
+        return route
+
     def _set_index_route(self):
         # if index_layout is specified, then we use this for the index page
         # of the story. otherwise, a layout is created according to the value 
@@ -159,55 +180,14 @@ class Xplorable:
             return path
         return '{}/{}'.format(self.app.server.static_url_path.rstrip('/'), path)
 
-    def _init_pages(self):
-        self._page_list = []
-        prev_page = None
-        for i, cls in enumerate(self.pages):
-            # create the page
-            page = cls(self.app, i + 1, self.project_path)
-
-            if prev_page is not None:
-                # link this page to the last one
-                page.prev_page = prev_page
-                prev_page.next_page = page
-
-            self._page_list.append(page)
-            prev_page = page
-
-        # link the last page to the first page    
-        prev_page.next_page = self._page_list[0]
-
-        # link the first page to the last page
-        self._page_list[0].prev_page = prev_page
-
-    def _register_routes(self):
-        self._routes = {}
-        for page in self.page_list:
-            # register long route: eg /the-page-name, /another-page
-            route = self._register_route(page.url, page.layout)
-            # update the page url in case it was assigned a different route 
-            page.url = route
-            # register short route: eg /1, /2, /3
-            self._register_route(f'/{str(page.index)}', page.layout)
-
-    def _register_route(self, route, layout):
-        if route in self.routes:
-            suffix = ''.join(random.choices(string.ascii_letters, k=5))
-            route = f'{route}-{suffix}'
-        self.routes[route] = layout
-        return route
-    
     @property
     def xplore_base_path(self):
         return os.path.dirname(os.path.realpath(__file__))
-    
-    @property
-    def page_list(self):
-        return self._page_list
 
     @property
-    def routes(self):
-        return self._routes
+    def project_path(self):
+        class_path = os.path.abspath(inspect.getfile(self.__class__))
+        return os.path.dirname(class_path)
 
     @property
     def all_css_files(self):
@@ -237,3 +217,8 @@ class Xplorable:
     @property
     def nav_items(self):
         return [(page.url, page.name) for page in self.page_list]
+
+    def __call__(self, *args):
+        # This makes it so that this object can be a WSGI app target
+        return self.app.server(*args)
+        
