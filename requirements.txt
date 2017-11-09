@@ -4,33 +4,32 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-certifi==2017.7.27.1      # via requests
+certifi==2017.11.5        # via requests
 chardet==3.0.4            # via requests
 click==6.7                # via flask
-dash-core-components==0.12.7
-dash-html-components==0.7.0
-dash-renderer==0.11.0
-dash==0.18.3
+dash-core-components==0.14.0
+dash-html-components==0.8.0
+dash-renderer==0.11.1
+dash==0.19.0
 decorator==4.1.2          # via plotly, traitlets
 flask-compress==1.4.0     # via dash
-flask-seasurf==0.2.2      # via dash
-flask==0.12.2             # via dash, flask-compress, flask-seasurf
+flask==0.12.2             # via dash, flask-compress
 gevent==1.2.2
 greenlet==0.4.12          # via gevent
 gunicorn==19.7.1
 idna==2.6                 # via requests
 ipython-genutils==0.2.0   # via nbformat, traitlets
 itsdangerous==0.24        # via flask
-jinja2==2.9.6             # via flask
+jinja2==2.10              # via flask
 jsonschema==2.6.0         # via nbformat
-jupyter-core==4.3.0       # via nbformat
+jupyter-core==4.4.0       # via nbformat
 markupsafe==1.0           # via jinja2
 nbformat==4.4.0           # via plotly
-numpy==1.13.1             # via pandas
-pandas==0.20.3
-plotly==2.0.15
+numpy==1.13.3             # via pandas
+pandas==0.21.0
+plotly==2.2.1
 python-dateutil==2.6.1    # via pandas
-pytz==2017.2              # via pandas, plotly
+pytz==2017.3              # via pandas, plotly
 requests==2.18.4          # via plotly
 six==1.11.0               # via plotly, python-dateutil, traitlets
 traitlets==4.3.2          # via jupyter-core, nbformat

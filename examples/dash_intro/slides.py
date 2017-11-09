@@ -249,7 +249,7 @@ class HelloWorld(Block):
     row_classes = ['center-y']
 
     content = [
-        Div(Markdown(
+        SyntaxHighlighter(
 """
     data = numpy.random.normal(size=1000)
 
@@ -266,7 +266,7 @@ class HelloWorld(Block):
         ),
         html.P('We made a thing!')
     ])
-"""), className='code'),
+""", language='python'),
         Div(children=[
             H2('Woah', style={'color':'red'}),
             Graph(
@@ -323,17 +323,19 @@ class ReactiveHelloWorld(Block):
     @property
     def content(self):
         content = [
-            Div(Markdown(
+            Div(SyntaxHighlighter(
 """
     app = dash.Dash()
     app.layout = html.Div([
                 Graph(id='graph'),
                 Slider(
                     id='slider',
-                    min=10,
-                    max=1000,
-                    value=10,
-                    step=100
+                    min=0,
+                    max=1001,
+                    value=0,
+                    step=100,
+                    marks={i:i for i in
+                           range(0, 1001, 100)}
                 )
             ])
 
@@ -343,15 +345,18 @@ class ReactiveHelloWorld(Block):
     def update_grapph(size):
         data = numpy.random.normal(size=size)
         return {'data': [go.Histogram(x=data)]}
-"""), className='code'),
+""", language='python', customStyle={'padding':0}),
+                style={'position':'relative', 'top':'-2em'}
+            ),
             Div([
                 Graph(id='graph'),
                 Slider(
                     id='slider',
-                    min=10,
-                    max=1000,
-                    value=10,
-                    step=100
+                    min=0,
+                    max=1001,
+                    value=0,
+                    step=100,
+                    marks={i:i for i in range(0, 1001, 100)}
                 )
             ])
         ]
@@ -369,17 +374,18 @@ class ReactiveHelloWorld(Block):
 
 class Callbacks(Block):
     shape = [[3, 9]]
-    content = [[], Div(Markdown(
+    content = [[], Div(SyntaxHighlighter(
 """
     app = dash.Dash()
     app.layout = html.Div([
                 Graph(id='graph'),
                 Slider(
                     id='slider',
-                    min=10,
-                    max=1000,
-                    value=10,
-                    step=100
+                    min=0,
+                    max=1001,
+                    value=0,
+                    step=100,
+                    marks={i:i for i in range(0, 1001, 100)}
                 )
             ])
 
@@ -387,7 +393,8 @@ class Callbacks(Block):
     def update_grapph(size):
         data = numpy.random.normal(size=size)
         return {'data': [go.Histogram(x=data)]}
-"""))]
+""", language="python"), style={'position':'relative', 'top':'-1em'}
+    )]
 
     # callback to change the data
     # maybe also a callback to insert an image.
@@ -424,7 +431,7 @@ class FeatureMarkdown(Block):
     shape = [[6, 6]]
     row_classes = [['center-y']]
     content = [
-        Markdown(
+        SyntaxHighlighter(
 '''
     app.layout = Markdown(
     """
@@ -434,7 +441,7 @@ class FeatureMarkdown(Block):
     * automatically converted to HTML
     * makes inline content creation _much_ easier
     """)
-''')
+''', language="python")
         ,
         Markdown(
 """
@@ -450,9 +457,9 @@ An easy to read and write **markup** language
 class SinglePageApps(Block):
     shape = [[4, 8]]
     row_classes = [['center-y pad-top']]
-    content = ['A simple URL router', Markdown(
+    content = ['A simple URL router', SyntaxHighlighter(
 """
-    app.callback(Output('main, 'children'), [Input('url', 'route')])
+    app.callback(Output('main', 'children'), [Input('url', 'route')])
     def display_page(route):
         if route = '/':
             return home_layout
@@ -462,7 +469,7 @@ class SinglePageApps(Block):
             return viz2_layout
         else:
             return page_not_found_layout
-""")]
+""", language="python")]
 
 
 class Extensible(Block):

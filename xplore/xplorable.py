@@ -7,6 +7,8 @@ import inspect
 from itertools import chain
 from collections import Mapping
 
+import dash_core_components as dcc
+import dash_html_components as html
 from dash import Dash
 from dash.dependencies import Input, Output
 from dash.development.base_component import Component
@@ -17,38 +19,14 @@ from .exceptions import ValidationException
 
 # Grand plan:
 #
-# content params should be able to take pages as values. This means that the
-# Page class should be called something else 'Block' maybe?
-#
-# Story subclasses should take a param multi_page. if True, each Block specified
-# in content is an independent page with generated routes. if False, content is
-# laid out according to 'shape', just like in Block class. 
+# content params should be able to take pages as values.
 
 # This will mean that the ID for each block will need to have an index
 # change page ID setting to something like BLOCK_ID_PREFIX = 'block
 
-# Other ideas:
-
-# Implement themes/addons as Mixins which introduce specific functionality
-# eg PresentationMixin which adds css and js required to turn into a talk.
-# probably include chevrons is css? also sets multi-page to True 
-
-# 'app' attribute on Xplorable should be 'dash'??
-# to help stop people thinking its the Flask app
-# -- on the other hand, all the dash docs refer to the Dash instance as 'app'
-
-# not sure about this one
-# should Story class just be a Block?? and have it be blocks all the way down??
-# while perhaps might be able to be made to work, there will be attributes that
-# are specific to the whole app but not individual blocks. eg multi_page
-
-# Xplorable takes a param:
-# routes = {name, number, both}
-# generates routes for pages according to respective values
-
 # as it stands I think maybe I've somewhat coupled the make_block_layout
-# function to the presentation module thing. how to reconcile.
-# maybe it should be part of the PresentationMixin, when it's a thing?
+# function to the presentation module thing. how to reconcile?
+
 
 
 class Xplorable:
@@ -107,14 +85,14 @@ class Xplorable:
         self.app.title = self.title
 
         # add the layout
-        self.app.layout = layouts.main(nav_items=self.nav_items)
+        self.app.layout = self._get_layout()
         
         # register the router callback with Dash
         @self.app.callback(Output(settings.PAGE_ELEMENT_ID, 'children'),
               [Input('url', 'pathname')])
         def display_page(pathname):
             if self.route_not_found_layout is None:
-                default_layout = layouts.page_not_found(pathname)
+                default_layout = html.P("No page '{}'".format(pathname))
             else:
                 default_layout = self.route_not_found_layout(pathname)
 
@@ -175,6 +153,33 @@ class Xplorable:
             raise ValidationException(msg.format("'first', 'outline', or 'vertical'"))
         self._register_route('/', self.index_page_layout)
             
+    def _get_layout(self):
+        # where should this go??
+        def nav_li(href, text, active=False):
+            className = 'nav-item nav-link' + (' active' if active else '')
+            return html.Li(dcc.Link(text, href=href), className=className)
+
+        navbar = html.Nav(
+            className='',
+            children=html.Ul(
+                className='nav nav-pills',
+                children=[nav_li(href, text) for href, text in self.nav_items]
+            )
+        )
+
+        layout = html.Div([
+            dcc.Location(id='url', refresh=False),
+            html.Div(
+                id='main',
+                children=[
+                    html.Div(navbar, id=settings.NAVBAR_ELEMENT_ID),
+                    html.Div(id=settings.PAGE_ELEMENT_ID)
+                ]
+            )
+        ])
+
+        return layout
+        
     def _get_asset_path(self, path):
         if path.startswith('http'):
             return path

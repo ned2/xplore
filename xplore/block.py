@@ -3,10 +3,9 @@ from itertools import chain
 import dash_core_components as dcc
 import dash_html_components as html
 
-from . import utils
+from .utils import slugify, camel_case_to_title, add_content
 from .exceptions import ValidationException
-
-from .layouts import make_block_layout
+from .components import Row, Col, left_right_nav
 
 # note: current gotcha with Block class is that layout trees in content
 # attribute will be shared across all instances of the class becuase
@@ -26,7 +25,6 @@ class Block:
 
     css_files = []
     js_files = []
-
     
     def __init__(self, app, index, project_path, name=None, url=None):
         self.app = app
@@ -88,7 +86,7 @@ class Block:
             # do with the content-less layout tree
             if not hasattr(self, 'row_classes'):
                 self.row_classes = None
-            layout = make_block_layout(
+            layout = self._make_layout(
                 shape=self.shape,
                 content=self.content,
                 row_classes=self.row_classes,
@@ -97,6 +95,51 @@ class Block:
             msg = "Block subclasses must either define a 'layout' attribute, " \
                   "a 'get_layout' method, or both 'shape' and 'content' attributes."
             raise ValidationException(msg)
+        return layout
+
+    # TODO: fix this function call, then test moved around code
+    def _make_layout(self, content=None, shape=None, header=True, nav_links=True,
+                          row_classes=None):
+
+        # TODO:
+        # Warning when number of columns in shape does not much number in content
+
+        if shape is None:
+            # default to one row with a single column
+            shape = [[12]]
+
+        if row_classes is None:
+            row_classes = [[] for _ in range(len(shape))]
+        elif len(row_classes) != len(shape):
+            msg = "'row_classes' param must be the same length as 'shape' param" 
+            raise ValidationException(msg)
+
+        row_list = []
+
+        if nav_links:
+            nav_links = left_right_nav(id='nav-links')
+            row_list.append(nav_links)
+
+        if header:
+            row_list.append(Row(html.H1(id='title')))
+
+        start_id = 1
+        for i, row_shape in enumerate(shape):
+            row = Row(
+                shape=row_shape,
+                start_id=start_id,
+                className=row_classes[i]
+            )
+            row_list.append(row)
+            start_id += len(row_shape)
+
+        # the page of rows
+        layout = html.Div(row_list)
+
+        # TODO add_content should probably be a decorator?
+        if content is not None:
+            add_content(layout, content)
+
         return layout
     
     def _add_classes(self):
@@ -134,7 +177,7 @@ class Block:
     @property
     def url(self):
         if not hasattr(self, '_url'):
-            self._url = f'/{utils.slugify(self.name)}'
+            self._url = f'/{slugify(self.name)}'
         return self._url
 
     @url.setter
@@ -144,5 +187,5 @@ class Block:
     @property
     def name(self):
         if not hasattr(self, '_name'):
-            self._name = utils.camel_case_to_title(self.__class__.__name__)
+            self._name = camel_case_to_title(self.__class__.__name__)
         return self._name

@@ -33,7 +33,6 @@ def Row(content=None, shape=None, start_id=1, **kwargs):
         msg = msg.format(bad_cols, VALID_COLS)
         raise ValidationException(msg)
 
-
     col_list = []    
     for i, size in enumerate(shape):
         # note that we intentionally embed the content-id one extra div so
@@ -57,4 +56,41 @@ def Row(content=None, shape=None, start_id=1, **kwargs):
     if content is not None:
         add_content(row, content)
 
+    return row
+
+
+def Link(href, text, **kwargs):
+    return html.Link(A(text, href=href), href=href, className='link', **kwargs)
+
+
+def left_right_nav(left=None, right=None, **kwargs):
+    next_link = html.Div(left, id='next-page')
+    prev_link = html.Div(right, id='prev-page')
+
+    chevron_size = 2 # em
+    chevron_area = 2*chevron_size
+    shared_styles = {
+        'height': '{}em'.format(chevron_area),
+        'width': '{}em'.format(chevron_area),
+        'backgroundRepeat': 'no-repeat',
+        'backgroundSize': '{}em'.format(chevron_size),
+    }
+
+    # TODO use STATIC_URL_PATH here
+
+    if left is None:
+        prev_link.style = {
+            'background': 'url(/static/xplore/svg/left_arrow.svg)',
+            'backgroundPosition': 'left top',
+            **shared_styles
+        }
+
+    if right is None:
+        next_link.style = {
+            'background': 'url(/static/xplore/svg/right_arrow.svg)',
+            'backgroundPosition': 'right top',
+            **shared_styles
+        }
+
+    row = Row([prev_link, next_link], **kwargs)
     return row
