@@ -1,11 +1,16 @@
+# element ID that each page's contents will be inserted into
 PAGE_ELEMENT_ID = 'page'
 
+# element ID that the navbar will be inserted into
 NAVBAR_ELEMENT_ID = 'navbar'
 
+# The path to xplore's static files
 STATIC_PATH = 'static'
+
 
 # The generated routes for CSS_FILES and JS_FILES will be prefixed with the
 # value of the static url path unless they begin with 'http'
+
 CSS_FILES = [
     'xplore/css/bootstrap.min.css',
     'xplore/css/xplore.css',

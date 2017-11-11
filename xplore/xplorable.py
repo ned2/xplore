@@ -14,7 +14,7 @@ from dash.dependencies import Input, Output
 from dash.development.base_component import Component
 from flask import Flask, send_from_directory
 
-from . import layouts, utils, settings
+from . import layouts, utils, config
 from .exceptions import ValidationException
 
 # Grand plan:
@@ -34,9 +34,11 @@ class Xplorable:
     def __init__(
             self,
             server=None,
+            static_folder='static',
             index_page_type='first',
             route_not_found_layout=None):
 
+        self.static_folder = static_folder
         self.route_not_found_layout = route_not_found_layout
         self.index_page_type = index_page_type
 
@@ -55,9 +57,10 @@ class Xplorable:
             page.finalise()
 
     def _make_flask_server(self):
+        # create a Flask instance, giving it the static folder to use 
         return Flask(
             __name__,
-            static_folder=os.path.join(self.project_path, settings.STATIC_PATH)
+            static_folder=os.path.join(self.project_path, self.static_folder)
         )
             
     def _init_pages(self):
@@ -88,7 +91,7 @@ class Xplorable:
         self.app.layout = self._get_layout()
         
         # register the router callback with Dash
-        @self.app.callback(Output(settings.PAGE_ELEMENT_ID, 'children'),
+        @self.app.callback(Output(config.PAGE_ELEMENT_ID, 'children'),
               [Input('url', 'pathname')])
         def display_page(pathname):
             if self.route_not_found_layout is None:
@@ -98,13 +101,13 @@ class Xplorable:
 
             # look up the path name from the routes
             return self.routes.get(pathname, default_layout)
-        
+        print(self.app.server.static_url_path)
         # register xplore's static route with Flask
         @self.app.server.route('{}/xplore/<path:path>'.format(
             self.app.server.static_url_path))
         def send_static(path):
             static_path = os.path.join(self.xplore_base_path,
-                                       settings.STATIC_PATH)
+                                       config.STATIC_PATH)
             return send_from_directory(static_path, path)
 
         # register all CSS files with app
@@ -139,7 +142,7 @@ class Xplorable:
     def _set_index_route(self):
         # if index_layout is specified, then we use this for the index page
         # of the story. otherwise, a layout is created according to the value 
-        # of settings.index_page_type
+        # of config.index_page_type
         if self.index_page_type == 'first':
             self.index_page_layout = self.page_list[0].layout
         elif self.index_page_type == 'outline':
@@ -172,8 +175,8 @@ class Xplorable:
             html.Div(
                 id='main',
                 children=[
-                    html.Div(navbar, id=settings.NAVBAR_ELEMENT_ID),
-                    html.Div(id=settings.PAGE_ELEMENT_ID)
+                    html.Div(navbar, id=config.NAVBAR_ELEMENT_ID),
+                    html.Div(id=config.PAGE_ELEMENT_ID)
                 ]
             )
         ])
@@ -187,10 +190,12 @@ class Xplorable:
 
     @property
     def xplore_base_path(self):
+        """Returns the path to the directory of the Xplore package"""
         return os.path.dirname(os.path.realpath(__file__))
 
     @property
     def project_path(self):
+        """The path to the directory containing the user's Xplorable instance"""
         class_path = os.path.abspath(inspect.getfile(self.__class__))
         return os.path.dirname(class_path)
 
@@ -201,7 +206,7 @@ class Xplorable:
         pages_css = (page.all_css_files for page in self.page_list)
 
         return chain(
-            settings.CSS_FILES,
+            config.CSS_FILES,
             self.__class__.css_files,
             *pages_css
         )
@@ -214,7 +219,7 @@ class Xplorable:
         pages_js = (page.all_js_files for page in self.page_list)
 
         return chain(
-            settings.JS_FILES,
+            config.JS_FILES,
             self.__class__.js_files,
             *pages_js
         )

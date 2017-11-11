@@ -1,12 +1,12 @@
 import os
 
 import pandas as pd
-import numpy
+import numpy as np
 import dash
+import dash_html_components as html
+import dash_core_components as dcc
 import plotly.graph_objs as go
-from dash_html_components import *
-from dash_core_components import *
-
+from dash.dependencies import Input, Output
 
 from xplore import Block
 from xplore.layouts import *
@@ -19,15 +19,15 @@ class Title(Block):
     shape = [[6, 6]]
     row_classes = ['center-y']
     content = [
-        Div(Markdown("""
+        html.Div(dcc.Markdown("""
 #### Ned Letcher
     nedned.net
     @nletcher
 """), style={'text-align':'left'}),
         [
-            Row(Img(src='/static/img/forefront.jpg',
+            Row(html.Img(src='/static/img/forefront.jpg',
                     style={'margin-bottom':'2em'})),
-            Row(Img(src='/static/img/melbourne-uni.png',
+            Row(html.Img(src='/static/img/melbourne-uni.png',
                     style={'width':'35%'}))
         ]
     ]
@@ -38,7 +38,7 @@ class Context(Block):
     shape = [[8, 4]]
     row_classes = ['center-y']
     content = [
-        Markdown(
+        dcc.Markdown(
 """
 * You've done some analysis
 * Want to communicate results with a visualisation
@@ -46,7 +46,7 @@ class Context(Block):
     * _interactive_
     * _shareable_
 """),
-        Markdown(
+        dcc.Markdown(
 """
 But you have finite
 * time
@@ -61,7 +61,7 @@ class JavaScript(Block):
     shape = [[8, 4]]
     row_classes = ['center-y']
     content = [
-        Markdown(
+        dcc.Markdown(
 """
 eg D3.js, plotly.js, Chart.js etc...
 * but most data analytics not done in JavaScript
@@ -69,10 +69,10 @@ eg D3.js, plotly.js, Chart.js etc...
 * requires front-end development skills
 * full stack developers??
 """),
-        Div([
-            Row(Img(src='/static/img/d3.png', style={'width':'30%'})),
-            Row(Img(src='/static/img/plotly.png')),
-            Row(Img(src='/static/img/chartjs.jpg')),
+        html.Div([
+            Row(html.Img(src='/static/img/d3.png', style={'width':'30%'})),
+            Row(html.Img(src='/static/img/plotly.png')),
+            Row(html.Img(src='/static/img/chartjs.jpg')),
         ], className='center pad-y')
     ]
 
@@ -81,7 +81,7 @@ class R(Block):
     name = "R"
     shape = [[12]]
     classes = ['center']
-    content = Row(Img(src='/static/img/shiny.png', style={'width':'50%'}))
+    content = Row(html.Img(src='/static/img/shiny.png', style={'width':'50%'}))
 
 
 class Python(Block):
@@ -89,7 +89,7 @@ class Python(Block):
     shape = [[9, 3]]
     row_classes = ['center-y']
     content = [
-        Markdown(
+        dcc.Markdown(
 """
 * **Jupyter**
     - Might already be using notebook for analysis
@@ -101,10 +101,10 @@ class Python(Block):
     - Some complexity involved?
 * **Dash**...
 """),
-        Div([
-            Row(Img(src='/static/img/jupyter.svg', style={'width':'100%'})),
-            Row(Img(src='/static/img/bokeh.png')),
-            Row(Img(src='/static/img/dash.svg')),
+        html.Div([
+            Row(html.Img(src='/static/img/jupyter.svg', style={'width':'100%'})),
+            Row(html.Img(src='/static/img/bokeh.png')),
+            Row(html.Img(src='/static/img/dash.svg')),
         ], className='center pad-y')
     ]
 
@@ -113,7 +113,7 @@ class Dash(Block):
     shape = [[8, 4]]
     row_classes = ['center-y']
     content = [
-        Markdown(
+        dcc.Markdown(
 """
 * Python framework for building data-driven web applications
 * Enables construction of modern reactive web-apps
@@ -122,9 +122,9 @@ class Dash(Block):
     - Flask (Python web framework)
     - React (JavaScript interface library)
 """),
-        Div([
-            Row(Img(src='/static/img/dash.svg', style={'width':'100%'})),
-            Row(Img(src='/static/img/plotly.png')),
+        html.Div([
+            Row(html.Img(src='/static/img/dash.svg', style={'width':'100%'})),
+            Row(html.Img(src='/static/img/plotly.png')),
         ], className='center pad-y-extra')]
 
 
@@ -146,34 +146,34 @@ class DashExample(Block):
         df = self.data['df']
         available_indicators = df['Indicator Name'].unique()
         content = {
-            'content-3': Div(Markdown(
+            'content-3': html.Div(dcc.Markdown(
 """
     function(input1, input2, input3, ...)  ==>  new_data
 """), className='center reveal', style={'font-size':'150%', 'margin-top':'2rem'}),
             'content-1':
-            Div([
-                Row(Div([
-                    Div('y-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
-                    Dropdown(
+            html.Div([
+                Row(html.Div([
+                    html.Div('y-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
+                    dcc.Dropdown(
                         id='yaxis-column',
                         options=[{'label': i, 'value': i} for i in available_indicators],
                         value='Life expectancy at birth, total (years)'
                     ),
-                    RadioItems(
+                    dcc.RadioItems(
                         id='yaxis-type',
                         options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                         value='Linear',
                         labelStyle={'display': 'inline-block'}
                     )
                 ], style={})),
-                Row(Div([
-                    Div('x-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
-                    Dropdown(
+                Row(html.Div([
+                    html.Div('x-axis', style={'opacity':0.7, 'margin-bottom':'0.25rem'}),
+                    dcc.Dropdown(
                         id='xaxis-column',
                         options=[{'label': i, 'value': i} for i in available_indicators],
                         value='Fertility rate, total (births per woman)'
                     ),
-                    RadioItems(
+                    dcc.RadioItems(
                         id='xaxis-type',
                         options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                         value='Linear',
@@ -182,9 +182,9 @@ class DashExample(Block):
                 ], style={}))
             ], className='pad-y', style={'font-size':'x-large'}),
             'content-2' :
-            Div([
-                Graph(id='indicator-graphic'),
-                Slider(
+            html.Div([
+                dcc.Graph(id='indicator-graphic'),
+                dcc.Slider(
                     id='year--slider',
                     min=df['Year'].min(),
                     max=df['Year'].max(),
@@ -197,13 +197,12 @@ class DashExample(Block):
         return content
 
     def callbacks(self, app):
-        @app.callback(
-            dash.dependencies.Output('indicator-graphic', 'figure'),
-            [dash.dependencies.Input('xaxis-column', 'value'),
-             dash.dependencies.Input('yaxis-column', 'value'),
-             dash.dependencies.Input('xaxis-type', 'value'),
-             dash.dependencies.Input('yaxis-type', 'value'),
-             dash.dependencies.Input('year--slider', 'value')])
+        @app.callback(Output('indicator-graphic', 'figure'),
+            [Input('xaxis-column', 'value'),
+             Input('yaxis-column', 'value'),
+             Input('xaxis-type', 'value'),
+             Input('yaxis-type', 'value'),
+             Input('year--slider', 'value')])
         def update_graph(xaxis_column_name, yaxis_column_name,
                          xaxis_type, yaxis_type,
                          year_value):
@@ -241,7 +240,7 @@ class Architecture(Block):
     name = "The Big Picture"
     shape = [[12]]
     classes = ['center']
-    content = Row(Img(src='/static/img/dash-architecture.svg', style={'width':'70%'}))
+    content = Row(html.Img(src='/static/img/dash-architecture.svg', style={'width':'70%'}))
 
 
 class HelloWorld(Block):
@@ -249,9 +248,9 @@ class HelloWorld(Block):
     row_classes = ['center-y']
 
     content = [
-        SyntaxHighlighter(
+        dcc.SyntaxHighlighter(
 """
-    data = numpy.random.normal(size=1000)
+    data = np.random.normal(size=1000)
 
     app = dash.Dash()
 
@@ -267,16 +266,16 @@ class HelloWorld(Block):
         html.P('We made a thing!')
     ])
 """, language='python'),
-        Div(children=[
-            H2('Woah', style={'color':'red'}),
-            Graph(
+        html.Div(children=[
+            html.H2('Woah', style={'color':'red'}),
+            dcc.Graph(
                 id='example-graph',
                 figure={
-                    'data': [go.Histogram(x=numpy.random.normal(size=10000))],
+                    'data': [go.Histogram(x=np.random.normal(size=10000))],
                     'layout': {'title': 'Hello World'}
                 }
             ),
-            P('We made a thing!')
+            html.P('We made a thing!')
 
         ])
     ]
@@ -285,7 +284,7 @@ class HelloWorld(Block):
 class Layouts(Block):
     shape = [[6, 2, 2, 2]]
     content = [
-        Markdown(
+        dcc.Markdown(
 """
 * *Reusable* Component trees
 * Components are Python classes for
@@ -293,24 +292,24 @@ class Layouts(Block):
     * special Dash components (eg Graph)
 * Converted to JSON and sent to browser
 """),
-        Div(['Div',
-             Ul([
-                 Li('H2'),
-                 Li('Graph'),
-                 Li('P')
+        html.Div(['Div',
+             html.Ul([
+                 html.Li('H2'),
+                 html.Li('Graph'),
+                 html.Li('P')
              ])
             ], className='clt'),
-        Div(['Div',
-             Ul([
-                 Li('H1'),
-                 Li(['Ul', Ul([Li('Li'), Li('Li'), Li('Li')])]),
+        html.Div(['Div',
+             html.Ul([
+                 html.Li('H1'),
+                 html.Li(['Ul', html.Ul([html.Li('Li'), html.Li('Li'), html.Li('Li')])]),
              ])
             ], className='clt'),
-        Div(['Div',
-             Ul([
-                 Li('Markdown'),
-                 Li('Img'),
-                 Li('Img')
+        html.Div(['Div',
+             html.Ul([
+                 html.Li('Markdown'),
+                 html.Li('Img'),
+                 html.Li('Img')
              ])
             ], className='clt')
     ]
@@ -323,12 +322,12 @@ class ReactiveHelloWorld(Block):
     @property
     def content(self):
         content = [
-            Div(SyntaxHighlighter(
+            html.Div(dcc.SyntaxHighlighter(
 """
     app = dash.Dash()
     app.layout = html.Div([
-                Graph(id='graph'),
-                Slider(
+                dcc.Graph(id='graph'),
+                dcc.Slider(
                     id='slider',
                     min=0,
                     max=1001,
@@ -343,14 +342,14 @@ class ReactiveHelloWorld(Block):
         Output('graph', 'figure'),
         [Input('slider', 'value')])
     def update_grapph(size):
-        data = numpy.random.normal(size=size)
+        data = np.random.normal(size=size)
         return {'data': [go.Histogram(x=data)]}
 """, language='python', customStyle={'padding':0}),
                 style={'position':'relative', 'top':'-2em'}
             ),
-            Div([
-                Graph(id='graph'),
-                Slider(
+            html.Div([
+                dcc.Graph(id='graph'),
+                dcc.Slider(
                     id='slider',
                     min=0,
                     max=1001,
@@ -364,22 +363,20 @@ class ReactiveHelloWorld(Block):
 
     def callbacks(self, app):
 
-        @app.callback(
-            dash.dependencies.Output('graph', 'figure'),
-            [dash.dependencies.Input('slider', 'value')])
+        @app.callback(Output('graph', 'figure'), [Input('slider', 'value')])
         def update_grapph(size):
-            data = numpy.random.normal(size=size)
+            data = np.random.normal(size=size)
             return {'data': [go.Histogram(x=data)]}
 
 
 class Callbacks(Block):
     shape = [[3, 9]]
-    content = [[], Div(SyntaxHighlighter(
+    content = [[], html.Div(dcc.SyntaxHighlighter(
 """
     app = dash.Dash()
     app.layout = html.Div([
-                Graph(id='graph'),
-                Slider(
+                dcc.Graph(id='graph'),
+                dcc.Slider(
                     id='slider',
                     min=0,
                     max=1001,
@@ -391,7 +388,7 @@ class Callbacks(Block):
 
     @app.callback(Output('graph', 'figure'), [Input('slider', 'value')])
     def update_grapph(size):
-        data = numpy.random.normal(size=size)
+        data = np.random.normal(size=size)
         return {'data': [go.Histogram(x=data)]}
 """, language="python"), style={'position':'relative', 'top':'-1em'}
     )]
@@ -407,17 +404,17 @@ class LayoutsAndCallbacks(Block):
     name = "Layouts & Callbacks"
     shape = [[4, 8]]
     row_classes = ['center-y pad-top']
-    content = [Div([
-        Div(['Div',
-             Ul([
-                 Li('H2'),
-                 Li('Graph'),
-                 Li('P')
+    content = [html.Div([
+        html.Div(['Div',
+             html.Ul([
+                 html.Li('H2'),
+                 html.Li('Graph'),
+                 html.Li('P')
              ])
             ], className='clt')
     ], style={'margin-left':'3em'}),
-               Div([
-                   Markdown(
+               html.Div([
+                   dcc.Markdown(
 """
 function(input1, input2, ...)  ==>  Graph.figure
 """)], className='center')]
@@ -427,23 +424,23 @@ function(input1, input2, ...)  ==>  Graph.figure
 
 
 class FeatureMarkdown(Block):
-    name = "Markdown"
+    name = "Markdown Component"
     shape = [[6, 6]]
     row_classes = [['center-y']]
     content = [
-        SyntaxHighlighter(
+        dcc.SyntaxHighlighter(
 '''
-    app.layout = Markdown(
+    app.layout = dcc.Markdown(
     """
     Markdown
-    ========================================
+    --------
     An easy to read and write **markup** language
     * automatically converted to HTML
     * makes inline content creation _much_ easier
     """)
 ''', language="python")
         ,
-        Markdown(
+        dcc.Markdown(
 """
 Markdown
 --------
@@ -457,7 +454,7 @@ An easy to read and write **markup** language
 class SinglePageApps(Block):
     shape = [[4, 8]]
     row_classes = [['center-y pad-top']]
-    content = ['A simple URL router', SyntaxHighlighter(
+    content = ['A simple URL router', dcc.SyntaxHighlighter(
 """
     app.callback(Output('main', 'children'), [Input('url', 'route')])
     def display_page(route):
@@ -475,7 +472,7 @@ class SinglePageApps(Block):
 class Extensible(Block):
     name = "Extensible Components"
     shape = [[12]]
-    content = Markdown(
+    content = dcc.Markdown(
 """
 * Dash layout components are React components
    - Can create custom own Dash layout components
@@ -490,7 +487,7 @@ class Deployment(Block):
     shape = [[8, 4]]
     row_classes = ['center-y']
     content = [
-        Markdown(
+        dcc.Markdown(
 """
 * Dash/Flask comes with a built-in web server
     - only meant for development
@@ -502,7 +499,7 @@ class Deployment(Block):
 * Will work on basically any hosting environment
     - potentially even Lambda (using Zappa)!!
 """),
-        Markdown(
+        dcc.Markdown(
 """
 Just Google:\\
 "Hosting Flask apps on X"\\
@@ -514,7 +511,7 @@ Where X = AWS, Google Cloud, Azure, etc...
 
 class Limitations(Block):
     shape = [[12]]
-    content = Markdown(
+    content = dcc.Markdown(
 """
 * Only supports plotly.js visualisations
     * but can create your own React components
@@ -525,10 +522,11 @@ class Limitations(Block):
 """)
 
 
+# TODO: why is last page being duplicated
 class Conclusion(Block):
     name = "A Dashing Future"
     shape = [[12]]
-    content = Markdown(
+    content = dcc.Markdown(
 """
 * Dash enables creation interactive web apps in pure Python
     - designed for analytics applications
