@@ -1,0 +1,78 @@
+html { font-size: 3em;}
+
+#page {
+    margin: 0 120px;
+}
+
+#page p {
+    margin-bottom: 0.5em;
+}
+
+#page h1 {
+    text-align: center;
+    margin-top: 0.1em;
+    margin-bottom: 0.8em;
+}
+
+#page .warning.note {
+    background-color: rgb(221, 87, 64);
+    box-shadow: 5px 5px 2.5px 0 rgba(221, 87, 64, 0.7);
+}
+
+#page .note {
+    background-color: rgb(66, 170, 244);
+    padding: 0.5em;
+    border-radius: 10px;
+    box-shadow: 5px 5px 2.5px 0 rgba(66, 170, 244, 0.7);
+}
+
+#next-page {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+#prev-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#nav-links {
+    opacity: 0;
+    transition: opacity .25s ease-out;
+}
+
+#nav-links:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.center-y {
+    display: flex;
+    align-items: center;
+}
+
+.center-x {
+    display: flex;
+    justify-content: center;
+}
+
+#page code {
+    display: block;
+    font-size: 60%;
+}
+
+.reveal {
+    opacity: 0;
+    transition: opacity .25s ease-out;
+}
+
+.reveal:hover {
+    opacity: 1;
+}
+
+
+#page .Select *, #page .Select-value * {
+    white-space: pre;
+}
