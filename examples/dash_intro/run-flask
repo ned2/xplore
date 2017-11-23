@@ -1,6 +1,0 @@
-#!/bin/bash
-
-SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
-export PYTHONPATH=${SCRIPTPATH}/../../:${PYTHONPATH}
-
-python ${SCRIPTPATH}/main.py
