@@ -8,9 +8,9 @@ VALID_COLS = set(range(1,13))
 
 def Col(size=12, **kwargs):
     if 'className' in kwargs:
-        kwargs['className'] = f'col-lg-{size} {kwargs["className"]}'
+        kwargs['className'] = f'col-{size} {kwargs["className"]}'
     else:
-        kwargs['className'] = f'col-lg-{size}'
+        kwargs['className'] = f'col-{size}'
     return html.Div(**kwargs)
 
 
@@ -92,5 +92,4 @@ def left_right_nav(left=None, right=None, **kwargs):
             **shared_styles
         }
 
-    row = Row([prev_link, next_link], **kwargs)
-    return row
+    return html.Div([prev_link, next_link], **kwargs)

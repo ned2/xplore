@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+PORT=5000
+
+if [ ! -z "$1" ]; then
+    PORT=$1
+fi
+
+echo "Starting gunicorn on port ${PORT}..."
+
+SCRIPTPATH=$(cd $(dirname $0); pwd -P)
+export PYTHONPATH=${SCRIPTPATH}/../../:${PYTHONPATH}
+
+gunicorn --worker-class gevent --preload --workers 2 --threads 4 --reload --bind 0.0.0.0:${PORT} main:talk.app.server

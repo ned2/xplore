@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+PORT=5000
+
+
+SCRIPTPATH=$(cd $(dirname $0); pwd -P)
+export PYTHONPATH=${SCRIPTPATH}/../../:${PYTHONPATH}
+
+mod_wsgi-express start-server --processes 1 --port ${PORT} wsgi.py

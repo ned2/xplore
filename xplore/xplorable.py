@@ -101,7 +101,7 @@ class Xplorable:
 
             # look up the path name from the routes
             return self.routes.get(pathname, default_layout)
-        print(self.app.server.static_url_path)
+
         # register xplore's static route with Flask
         @self.app.server.route('{}/xplore/<path:path>'.format(
             self.app.server.static_url_path))
