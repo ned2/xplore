@@ -6,15 +6,44 @@ from .utils import add_content
 VALID_COLS = set(range(1,13))
 
 
-def Col(size=12, **kwargs):
-    if 'className' in kwargs:
-        kwargs['className'] = f'col-{size} {kwargs["className"]}'
+def add_class(className, args_dict):
+    if 'className' in args_dict:
+        args_dict['className'] = f'{className} {args_dict["className"]}'
     else:
-        kwargs['className'] = f'col-{size}'
+        args_dict['className'] = className
+
+        
+def add_base_styles(styles, args_dict):
+    if 'style' in args_dict:
+        styles.update(args_dict['style'])
+    args_dict['style'] = styles 
+
+
+def FontA(name):
+    return html.I(className=f"fa {name}")
+    
+    
+def Image(img_path, round=False, width=None, **kwargs):
+    styles = {
+        'width': '100%',
+        'height': 'auto',
+    }
+
+    if round:
+        styles['border-radius'] = '10px'
+    if width is not None:
+        styles['width'] = f'{width}%'
+        
+    add_base_styles(styles, kwargs)
+    return html.Img(src=f'/static/img/{img_path}', **kwargs)
+
+
+def Col(size=12, **kwargs):
+    add_class(f'col-{size}', kwargs)
     return html.Div(**kwargs)
 
 
-def Row(content=None, shape=None, start_id=1, **kwargs):
+def Row(content=None, shape=None, start_id=1, col_classes=None, **kwargs):
     if shape is None:
         if content is None or isinstance(content, Component):
             shape = [12]
@@ -41,15 +70,15 @@ def Row(content=None, shape=None, start_id=1, **kwargs):
         # than layout['some-id'].children = component) when building up
         # intermediate layout components
         content_id = start_id + i
-        col = Col(size=size, children=html.Div(id=f'content-{content_id}'))
+        col = Col(
+            size=size,
+            children=html.Div(id=f'content-{content_id}'),
+            className=' '.join(col_classes if col_classes else [])
+        )
         col_list.append(col)
 
     kwargs['children'] = col_list
-        
-    if 'className' in kwargs:
-        kwargs['className'] = f'row {kwargs["className"]}'
-    else:
-        kwargs['className'] = 'row'
+    add_class('row', kwargs)        
 
     row = html.Div(**kwargs)
 

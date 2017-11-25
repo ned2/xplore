@@ -25,8 +25,13 @@ class Block:
 
     css_files = []
     js_files = []
+    shape = [[12]]
     header = False
     title = False
+    hcenter = True
+    vcenter = True
+    row_classes = None
+    row_heights = None
     
     def __init__(self, app, index, project_path, name=None, url=None):
         self.app = app
@@ -80,15 +85,13 @@ class Block:
             layout = self.layout
         elif hasattr(self, 'get_layout'):
             layout = self.get_layout()  
-        elif hasattr(self, 'shape') and hasattr(self, 'content'): 
+        elif hasattr(self, 'content'): 
             # possibly could make content optional; not sure what someone would
             # do with the content-less layout tree
-            if not hasattr(self, 'row_classes'):
-                self.row_classes = None
             layout = self._make_layout()
         else:
             msg = "Block subclasses must either define a 'layout' attribute, " \
-                  "a 'get_layout' method, or both 'shape' and 'content' attributes."
+                  "a 'get_layout' method, or a 'content' attributes."
             raise ValidationException(msg)
         return layout
 
@@ -108,44 +111,67 @@ class Block:
         return html.Div(layout)
     
     def _make_container(self):
-        # TODO: Warning when number of columns in shape does not much number in
-        # content
-        if self.shape is None:
-            # default to one row with a single column
-            shape = [[12]]
-
-        if self.row_classes is None:
-            self.row_classes = [[] for _ in range(len(self.shape))]
-        elif len(self.row_classes) != len(self.shape):
+        if self.row_classes is not None and len(self.row_classes) != len(self.shape):
             msg = "'row_classes' param must be the same length as 'shape' param" 
+            raise ValidationException(msg)
+
+        if self.row_heights is not None and len(self.row_heights) != len(self.shape):
+            msg = "'row_heights' param must be the same length as 'shape' param" 
             raise ValidationException(msg)
 
         row_list = []
 
         if self.title:
-            row_list.append(Row(html.H1(
-                id='title',
-                children=self.name
-            )))
+            row_list.append(Row(html.H1(id='title', children=self.name)))
 
         start_id = 1
-        for i, row_shape in enumerate(self.shape):
-            row = Row(
+        for i, row_shape in enumerate(self.shape):        
+            row_classes, col_classes = [], []
+            if self.vcenter:
+                col_classes.append('vcenter-child')
+                
+            if self.hcenter:
+                col_classes.append('d-flex')
+                col_classes.append('justify-content-center')
+                row_classes.append('justify-content-center')
+                
+            if self.row_classes is not None:
+                row_classes.append(self.row_classes[i])
+
+            if self.row_heights is not None and self.row_heights[i] is not None:
+                style = {'height': f'{self.row_heights[i]}vh'}
+            else:
+                style = {}
+
+            row_list.append(Row(
                 shape=row_shape,
                 start_id=start_id,
-                className=self.row_classes[i]
-            )
-            row_list.append(row)
+                col_classes=col_classes,
+                className=' '.join(row_classes),
+                style=style,
+            ))
             start_id += len(row_shape)
 
+        container_classes = ['container-fluid']
+
+        if self.vcenter:
+            container_classes.append('d-flex align-items-center')
+        if self.hcenter:
+            container_classes.append('justify-content-center')
+            
         # the bootstrap container    
         container = html.Div(
             id="content",
-            className='container-fluid d-flex align-items-center',
+            className=' '.join(container_classes),
             children=html.Div(row_list)
         )
 
-        if self.content is not None:
+        if hasattr(self, 'content'):
+            if isinstance(self.content, list):
+                num_elements = len(list(chain.from_iterable(self.shape)))
+                if num_elements != len(self.content):
+                    msg = "'shape' param must have same number elements as 'content' param" 
+                    raise ValidationException(msg)
             add_content(container, self.content)
 
         return container

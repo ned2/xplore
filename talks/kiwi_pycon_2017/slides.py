@@ -10,7 +10,8 @@ from dash.dependencies import Input, Output
 
 from xplore import Block
 from xplore.layouts import *
-from xplore.components import Col, Row
+from xplore.components import Col, Row, Image, FontA
+
 
 # Time: 30 minutes
 
@@ -18,7 +19,6 @@ class Title(Block):
     name = "Front-end Web Development in Python using Dash"
     title = True
     shape = [[6, 6]]
-    row_classes = ['center-y']
     content = [
         html.Div(dcc.Markdown("""
 #### Ned Letcher
@@ -30,48 +30,30 @@ class Title(Block):
 
 
 class Context(Block):
-    name = "The Problem"
-    header = True
-    shape = [[8, 4]]
-    row_classes = ['center-y']
+    shape = [[6, 6], [12], [6, 6]]
+    row_heights = [None, 20, None]
     content = [
-        dcc.Markdown(
-"""
-* You've done some analysis
-* Want to communicate results with a visualisation
-* It needs to be
-    * _interactive_
-    * _shareable_
-"""),
-        dcc.Markdown(
-"""
-But you have finite
-* time
-* people
-* capabilities
-""", className='warning note')
+        # TODO change this to tabular data: eg screen shot of dataframe in
+        # jupyter notebook
+        Image('code.jpg', round=True, width=65),
+        Image('code.jpg', round=True, width=65),
+        FontA('fa-arrow-down'),
+        Image('charts.svg', round=True, width=65),
+        Image('interfaces.jpg', round=True, width=65),
     ]
 
 
-class JavaScript(Block):
-    name = "JavaScript library?" 
-    shape = [[8, 4]]
-    row_classes = ['center-y']
-    content = [
+class Need(Block):
+    name = "Needs to be"
+    title = True
+    content = html.Div(
         dcc.Markdown(
 """
-eg D3.js, plotly.js, Chart.js etc...
-* but most data analytics not done in JavaScript
-* integrating data will take time
-* requires front-end development skills
-* full stack developers??
-"""),
-        html.Div([
-            Row(html.Img(src='/static/img/d3.png', style={'width':'30%'})),
-            Row(html.Img(src='/static/img/plotly.png')),
-            Row(html.Img(src='/static/img/chartjs.jpg')),
-        ], className='center pad-y')
-    ]
+* interactive
+* sharable
+* deployable
+* scalable
+"""), className="note")
 
 
 class R(Block):
@@ -423,7 +405,7 @@ function(input1, input2, ...)  ==>  Graph.figure
 class FeatureMarkdown(Block):
     name = "Markdown Component"
     shape = [[6, 6]]
-    row_classes = [['center-y']]
+    row_classes = ['center-y']
     content = [
         dcc.SyntaxHighlighter(
 '''
@@ -450,7 +432,7 @@ An easy to read and write **markup** language
 
 class SinglePageApps(Block):
     shape = [[4, 8]]
-    row_classes = [['center-y pad-top']]
+    row_classes = ['center-y pad-top']
     content = ['A simple URL router', dcc.SyntaxHighlighter(
 """
     app.callback(Output('main', 'children'), [Input('url', 'route')])

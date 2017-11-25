@@ -12,6 +12,7 @@ STATIC_PATH = 'static'
 # value of the static url path unless they begin with 'http'
 
 CSS_FILES = [
+    'xplore/css/font-awesome.min.css',
     'xplore/css/bootstrap.min.css',
     'xplore/css/xplore.css',
     'xplore/font/source-sans-pro/source-sans-pro.css',

@@ -1,21 +1,69 @@
 * outline
 ** title
 ** context
-In my work, frequently need to make interfaces that are:
+In my work, frequently need to make interfaces that:
  -- expose a model built in Python
  -- interactive
  -- sharable
  -- scalable (reasonably)
+
+Picture:
+
+shiny thing on the left ==> bullet points on the right
 ** man many many JavaScript options
 (slide of JS logos) 
-** problems
+** problems (separate slide for each)
+-- need to have familiarity with frontend web development/JavaScript
+   (not all full stack developers)
+
 -- work involved in gluing Python into JavaScript
--- need to have familiarity with JavaScript
-** the jungle of JavaScript toolchains
 
+-- overheads involved in managing JavaScript codebase 
+   (navigating the jungle of JavaScript toolchains)
+   eg webpack, babble, bower, grunt, gulp, jslint, broccoli
+** What we want:
+A simple framework for developing interactive web applications *within* Python
+** The solution: Dash
+-- Made by Plotly
+-- Open Source (MIT Library)
+-- built on Flask, React, and plotly.js
+-- Shiny for Python
+(note that I'm not involved with Plotly)
+** Example Dash app -- Indicators thing
+** The Inception moment (*da dun*)
+image of spinning top 
+** Dash Architecture
+** Dash Hello World
+** Layouts
+** Reactive Hello World
+** Callbacks
+** Layouts and Callbacks
+** What's in the box?
+(things you don't have to code)
+*** Dash Core Components
+Show a graph with the following inputs
 
+-- dropdown
+-- slider
+-- rangeslider
+-- input
+-- textarea
+-- radio items
+-- datepicker
+-- datepickerrange
 
-
+Graph can be changed via dropdown to inject
+different plot types.
+*** Table
+*** Tabs
+*** Upload
+*** Markdown
+** Extensible through React Apps
+** Single Page Apps
+** Interval
+** Deployment
+** Limitations
+** Conclusion
 * old outline
 Title 
 Context

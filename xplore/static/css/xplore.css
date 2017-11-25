@@ -104,3 +104,13 @@ h1  {
     white-space: pre;
 }
 
+.vcenter-child > * {
+    display: flex!important;
+    flex-direction: column!important;
+    justify-content: center!important;
+    align-self: center!important;
+}
+
+ul {
+    margin-bottom: 0;
+}
