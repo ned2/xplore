@@ -30,6 +30,7 @@ class Block:
     title = False
     hcenter = True
     vcenter = True
+    row_vcenter = True
     row_classes = None
     row_heights = None
     
@@ -85,14 +86,7 @@ class Block:
             layout = self.layout
         elif hasattr(self, 'get_layout'):
             layout = self.get_layout()  
-        elif hasattr(self, 'content'): 
-            # possibly could make content optional; not sure what someone would
-            # do with the content-less layout tree
-            layout = self._make_layout()
-        else:
-            msg = "Block subclasses must either define a 'layout' attribute, " \
-                  "a 'get_layout' method, or a 'content' attributes."
-            raise ValidationException(msg)
+        layout = self._make_layout()
         return layout
 
     def _make_layout(self):
@@ -127,12 +121,9 @@ class Block:
         start_id = 1
         for i, row_shape in enumerate(self.shape):        
             row_classes, col_classes = [], []
-            if self.vcenter:
-                col_classes.append('vcenter-child')
-                
+            if self.row_vcenter:
+                row_classes.append('align-items-center')
             if self.hcenter:
-                col_classes.append('d-flex')
-                col_classes.append('justify-content-center')
                 row_classes.append('justify-content-center')
                 
             if self.row_classes is not None:
@@ -147,8 +138,10 @@ class Block:
                 shape=row_shape,
                 start_id=start_id,
                 col_classes=col_classes,
+                hcenter=self.hcenter,
                 className=' '.join(row_classes),
                 style=style,
+                
             ))
             start_id += len(row_shape)
 

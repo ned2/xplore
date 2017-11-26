@@ -1,3 +1,11 @@
+* notes from @jackdbd's Dash talk to include
+*8 shiny for python
+** shared immutable state
+-- callbacks can run in concurrently (multiple workers or threads for non-blocking IO)
+-- can cache callbacks
+-- no global keyword!
+ (don't mutate variables outside you function's scope)
+** add custom CSS/JS
 * outline
 ** title
 ** context
@@ -16,11 +24,11 @@ shiny thing on the left ==> bullet points on the right
 -- need to have familiarity with frontend web development/JavaScript
    (not all full stack developers)
 
--- work involved in gluing Python into JavaScript
-
 -- overheads involved in managing JavaScript codebase 
    (navigating the jungle of JavaScript toolchains)
    eg webpack, babble, bower, grunt, gulp, jslint, broccoli
+
+-- work involved in gluing Python into JavaScript
 ** What we want:
 A simple framework for developing interactive web applications *within* Python
 ** The solution: Dash

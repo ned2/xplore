@@ -2,8 +2,10 @@ import dash_html_components as html
 from dash.development.base_component import Component
 
 from .utils import add_content
+from .exceptions import ValidationException
 
-VALID_COLS = set(range(1,13))
+
+VALID_COLS = set(list(range(1,13))+[None])
 
 
 def add_class(className, args_dict):
@@ -21,9 +23,37 @@ def add_base_styles(styles, args_dict):
 
 def FontA(name):
     return html.I(className=f"fa {name}")
-    
-    
-def Image(img_path, round=False, width=None, **kwargs):
+
+
+def Box(children=None, center=False, **kwargs):
+    styles = {}
+    if center:
+        styles['textAlign'] = 'center'
+        
+    add_base_styles(styles, kwargs)
+    add_class('box', kwargs)
+    return html.Div(
+        children=children,
+        **kwargs
+    )
+
+
+def BackgroundImage(children=None, src=None, **kwargs):
+    return html.Div(
+        children=children,
+        style={
+            'background': f'url("/static/img/{src}") no-repeat center center fixed',
+            'backgroundSize': 'cover',
+            'position': 'fixed',
+            'height': '100vh',
+            'width': '100vw',
+            'top':0,
+            'zIndex':-1000
+        },
+        **kwargs)
+
+
+def Image(src=None, round=False, width=None, **kwargs):
     styles = {
         'width': '100%',
         'height': 'auto',
@@ -32,18 +62,27 @@ def Image(img_path, round=False, width=None, **kwargs):
     if round:
         styles['border-radius'] = '10px'
     if width is not None:
-        styles['width'] = f'{width}%'
+        if isinstance(width, int) or (isinstance(width, str) and width.isdigit()): 
+            styles['width'] = f'{width}%'
+        elif isinstance(width, str):
+            styles['width'] = width
+        else:
+            raise ValidationException("'width' must be an integer or a string")    
         
     add_base_styles(styles, kwargs)
-    return html.Img(src=f'/static/img/{img_path}', **kwargs)
+    return html.Img(src=f'/static/img/{src}', **kwargs)
 
 
-def Col(size=12, **kwargs):
-    add_class(f'col-{size}', kwargs)
-    return html.Div(**kwargs)
+def Col(children=None, size=12, **kwargs):
+    if size is None:
+        col_class = 'col'
+    else:
+        col_class = f'col-{size}'
+    add_class(col_class, kwargs)
+    return html.Div(children=children, **kwargs)
 
 
-def Row(content=None, shape=None, start_id=1, col_classes=None, **kwargs):
+def Row(content=None, shape=None, start_id=1, hcenter=False, col_classes=None, **kwargs):
     if shape is None:
         if content is None or isinstance(content, Component):
             shape = [12]
@@ -62,7 +101,14 @@ def Row(content=None, shape=None, start_id=1, col_classes=None, **kwargs):
         msg = msg.format(bad_cols, VALID_COLS)
         raise ValidationException(msg)
 
-    col_list = []    
+    if col_classes is None:
+        col_classes = []
+
+    if hcenter:
+        col_classes.append('d-flex')
+        col_classes.append('justify-content-center')
+
+    col_list = []
     for i, size in enumerate(shape):
         # note that we intentionally embed the content-id one extra div so
         # that we can use these IDs as temporary identifiers that can be
@@ -79,7 +125,6 @@ def Row(content=None, shape=None, start_id=1, col_classes=None, **kwargs):
 
     kwargs['children'] = col_list
     add_class('row', kwargs)        
-
     row = html.Div(**kwargs)
 
     if content is not None:

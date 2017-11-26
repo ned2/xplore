@@ -10,15 +10,11 @@ trigger a page-load when clicked. */
 a.link a {pointer-events: none}
 
 #main {
-    margin: 0 120px;
+    margin: 0 20px;
 }
 
 #navbar {
     display: none;
-}
-
-#title {
-    margin-bottom: 2em
 }
 
 #content {
@@ -104,13 +100,28 @@ h1  {
     white-space: pre;
 }
 
-.vcenter-child > * {
-    display: flex!important;
-    flex-direction: column!important;
-    justify-content: center!important;
-    align-self: center!important;
-}
+/* .vcenter-child > * {
+   display: flex!important;
+   flex-direction: column!important;
+   justify-content: center!important;
+   align-self: center!important;
+   } */
 
 ul {
     margin-bottom: 0;
 }
+
+img {align-self: center}
+
+/* user classes */
+
+.box{
+    border: 0.3rem black solid;
+    padding: 0.5rem;
+}
+
+pre {
+    border-radius: 15px;
+}
+
+.vcenter {align-self:center;}
