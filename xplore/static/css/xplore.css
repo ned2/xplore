@@ -22,8 +22,9 @@ a.link a {pointer-events: none}
     font-family: 'Source Sans Pro';
 }
 
+pre {border-radius: 15px;}
+
 /* need to clean these up */
-#page .center {text-align: center;}
 #page .pad-y .row {margin-bottom: 1em}
 #page .pad-y-extra .row {margin-bottom: 2em}
 #page .pad-top {margin-top: 2em}
@@ -71,16 +72,6 @@ h1  {
     cursor: pointer;
 }
 
-.center-y {
-    display: flex;
-    align-items: center;
-}
-
-.center-x {
-    display: flex;
-    justify-content: center;
-}
-
 #page code {
     display: block;
     font-size: 60%;
@@ -120,8 +111,14 @@ img {align-self: center}
     padding: 0.5rem;
 }
 
-pre {
-    border-radius: 15px;
+.vcenter {align-self: center;}
+.center {text-align: center;}
+
+.dcc-component {
+    background-color: #0088ee82;
 }
 
-.vcenter {align-self:center;}
+.html-component {
+    background-color: #ee000082;
+}
+

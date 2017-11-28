@@ -42,8 +42,7 @@ def BackgroundImage(children=None, src=None, **kwargs):
     return html.Div(
         children=children,
         style={
-            'background': f'url("/static/img/{src}") no-repeat center center fixed',
-            'backgroundSize': 'cover',
+            'background': f'url("/static/img/{src}") center center / cover no-repeat fixed',
             'position': 'fixed',
             'height': '100vh',
             'width': '100vw',

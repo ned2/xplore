@@ -86,6 +86,7 @@ class Block:
             layout = self.layout
         elif hasattr(self, 'get_layout'):
             layout = self.get_layout()  
+
         layout = self._make_layout()
         return layout
 

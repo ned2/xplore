@@ -5,8 +5,9 @@ import numpy as np
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
+import dash_table_experiments as dt
 import plotly.graph_objs as go
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 from xplore import Block
 from xplore.layouts import *
@@ -35,7 +36,7 @@ class Context(Block):
     content = [
         # TODO change this to tabular data: eg screen shot of dataframe in
         # jupyter notebook
-        Image('code.jpg', round=True, width=65),
+        Image('table.png', round=True, width=80),
         Image('code.jpg', round=True, width=65),
         FontA('fa-arrow-down'),
         Image('charts.svg', round=True, width=65),
@@ -96,13 +97,17 @@ class Dash(Block):
         ]),
         dcc.Markdown(
 """
-* Framework for building data-driven reactive web applications __*using only Python!!*__
+* Framework for building data-driven reactive web applications
+  - __*using only Python!!*__
 * Made by Plotly
 * Open source (MIT Licence)
 * Active community
 * ~3k ★ on GitHub
 """)
         ]
+
+class Meta(Block):
+    content = Image(src='whatifitoldyou.jpg')
 
 
 class DashExample(Block):
@@ -160,7 +165,7 @@ class DashExample(Block):
             ], className='pad-y', style={'font-size':'x-large'}),
             'content-3' :
             html.Div([
-                dcc.Graph(id='indicator-graphic'),
+                dcc.Graph(id='indicator-graphic', animate=True),
                 dcc.Slider(
                     id='year--slider',
                     min=df['Year'].min(),
@@ -328,7 +333,6 @@ def update_grapph(size):
         return content
 
     def callbacks(self, app):
-
         @app.callback(Output('graph', 'figure'), [Input('slider', 'value')])
         def update_grapph(size):
             data = np.random.normal(size=size)
@@ -370,60 +374,76 @@ def update_grapph(size):
         
 class Layouts(Block):
     header = True    
-    shape = [[6, 2, 2, 2]]
+    shape = [[6, 6]]
     content = [
-        dcc.Markdown(
-"""
-* *Reusable* Component trees
-* Components are Python classes for
-    * any HTML element
-    * special Dash components (eg Graph)
-* Converted to JSON and sent to browser
-"""),
-        html.Div(['Div',
-             html.Ul([
-                 html.Li('H2'),
-                 html.Li('Graph'),
-                 html.Li('P')
-             ])
-            ], className='clt'),
-        html.Div(['Div',
-             html.Ul([
-                 html.Li('H1'),
-                 html.Li(['Ul', html.Ul([html.Li('Li'), html.Li('Li'), html.Li('Li')])]),
-             ])
-            ], className='clt'),
-        html.Div(['Div',
-             html.Ul([
-                 html.Li('Markdown'),
-                 html.Li('Img'),
-                 html.Li('Img')
-             ])
-            ], className='clt')
+        html.Div([
+            Row(html.P('Reusable Component trees', className="center")),
+            Row(html.P()),
+            Row([
+                html.Div([
+                    html.A('Div', className="html-component"),
+                    html.Ul([
+                        html.Li(html.A('H2', className="html-component")),
+                        html.Li(html.A('Graph', className="dcc-component")),
+                        html.Li(html.A('P', className="html-component")),
+                    ])
+                ], className='clt'),
+                html.Div([
+                    html.A('Div', className="html-component"),
+                    html.Ul([
+                        html.Li(html.A('H1', className="html-component")),
+                        html.Li([
+                            html.Div(html.A('Ul', className="html-component")),
+                            html.Ul([
+                                html.Li(html.A('Li', className="html-component")),
+                                html.Li(html.A('Li', className="html-component")),
+                                html.Li(html.A('Li', className="html-component")),
+                            ])
+                        ]),
+                    ])
+                ], className='clt'),
+                html.Div([
+                    html.A('Div', className="html-component"),
+                    html.Ul([
+                        html.Li(html.A('Markdown', className="dcc-component")),
+                        html.Li(html.A('Img', className="html-component")),
+                        html.Li(html.A('Img', className="html-component")),
+                    ])
+                ], className='clt')
+            ])
+        ]),
+        html.Div(
+            className="tree",
+            children=html.Ul([
+                html.Li([
+                    html.A("Component"),
+                    html.Ul([
+                        html.Li(html.A("HTML Component", className="html-component")),
+                        html.Li(html.A("Dash Component", className="dcc-component")),
+                    ])
+                ])
+            ])
+        )
     ]
 
-
-class LayoutsAndCallbacks(Block):
-    Name = "Layouts and Callbacks"
-    title = True
-
-
-class FeatureMarkdown(Block):
-    name = "Markdown Component"
+    
+class MarkdownComponent(Block):
+    header = True
     shape = [[6, 6]]
-    row_classes = ['center-y']
     content = [
         dcc.SyntaxHighlighter(
+            language='python',
+            theme='dark',
+            children=
 '''
-    app.layout = dcc.Markdown(
-    """
-    Markdown
-    --------
-    An easy to read and write **markup** language
-    * automatically converted to HTML
-    * makes inline content creation _much_ easier
-    """)
-''', language="python")
+app.layout = dcc.Markdown("""
+Markdown
+--------
+An easy to read and write **markup** language
+* automatically converted to HTML
+* _greatly_ simplifies content creation
+ """)
+'''.strip())
         ,
         dcc.Markdown(
 """
@@ -431,13 +451,114 @@ Markdown
 --------
 An easy to read and write **markup** language
 * automatically converted to HTML
-* makes inline content creation _much_ easier
+* _greatly_ simplifies content creation
 """)]
 
 
+# TODO
+class MiscComponents(Block):
+    title = True
 
+    
+# TODO    
+class DataTableComponentImage(Block):
+    content = Image(src='datatable.png', width=80)
+
+
+#TODO
+class TabsComponent(Block):
+    title = True
+
+
+class DataTableComponent(Block):
+    header = True
+
+    def get_data(self):
+        df = pd.read_csv(
+            'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv'
+        )
+        df = df[df['year'] == 2007]
+        df[0:20]
+        self.data = df
+
+    @property    
+    def content(self):
+        return html.Div([
+            html.H4('Gapminder DataTable'),
+            # dt.DataTable(
+            #     rows=self.data.to_dict('records'),
+            #     # optional - sets the order of columns
+            #     columns=sorted(self.data.columns),
+            #     row_selectable=True,
+            #     filterable=True,
+            #     sortable=True,
+            #     selected_row_indices=[],
+            #     id='datatable-gapminder'
+            # ),
+            html.Div(id='selected-indexes'),
+            dcc.Graph(id='graph-gapminder'),
+        ], className="container")
+
+    def callbacks(self, app):
+        @self.app.callback(
+            Output('datatable-gapminder', 'selected_row_indices'),
+            [Input('graph-gapminder', 'clickData')],
+            [State('datatable-gapminder', 'selected_row_indices')])
+        def update_selected_row_indices(clickData, selected_row_indices):
+            if clickData:
+                for point in clickData['points']:
+                    if point['pointNumber'] in selected_row_indices:
+                        selected_row_indices.remove(point['pointNumber'])
+                    else:
+                        selected_row_indices.append(point['pointNumber'])
+            return selected_row_indices
+
+        @self.app.callback(
+            Output('graph-gapminder', 'figure'),
+            [Input('datatable-gapminder', 'rows'),
+             Input('datatable-gapminder', 'selected_row_indices')])
+        def update_figure(rows, selected_row_indices):
+            dff = pd.DataFrame(rows)
+            fig = plotly.tools.make_subplots(
+                rows=3, cols=1,
+                subplot_titles=('Life Expectancy', 'GDP Per Capita', 'Population',),
+                shared_xaxes=True)
+            marker = {'color': ['#0074D9']*len(dff)}
+            for i in (selected_row_indices or []):
+                marker['color'][i] = '#FF851B'
+            fig.append_trace({
+                'x': dff['country'],
+                'y': dff['lifeExp'],
+                'type': 'bar',
+                'marker': marker
+            }, 1, 1)
+            fig.append_trace({
+                'x': dff['country'],
+                'y': dff['gdpPercap'],
+                'type': 'bar',
+                'marker': marker
+            }, 2, 1)
+            fig.append_trace({
+                'x': dff['country'],
+                'y': dff['pop'],
+                'type': 'bar',
+                'marker': marker
+            }, 3, 1)
+            fig['layout']['showlegend'] = False
+            fig['layout']['height'] = 800
+            fig['layout']['margin'] = {
+                'l': 40,
+                'r': 10,
+                't': 60,
+                'b': 200
+            }
+            fig['layout']['yaxis3']['type'] = 'log'
+            return fig
+
+        
 class Extensible(Block):
     name = "Extensible Components"
+    header = True
     shape = [[12]]
     content = dcc.Markdown(
 """
@@ -448,39 +569,74 @@ class Extensible(Block):
    - Can be added to the open source Dash library for all to benefit
 """)
 
-    
+
+# TODO 
+
 # Add:
 # -- can only target one output element
 # -- each element-property pair can only be the output of one callback
-    
+# -- can target layout     
 class Callbacks(Block):
     header = True
+    shape = [[None], [None]]
+    content = [
+        dcc.SyntaxHighlighter(
+            language="python",
+            theme="dark",
+            children="""    
+@app.callback(
+    Output('output-box', 'children'),
+    [State('input', 'value')],
+    [Input('slider', 'value'), [Input('dropdown', 'value')],
+    [Event('button', 'click')])
+def update(state1, input1, input2):
+    return f"Input box val: {state1}, slider val: {input1}, and dropdown val: {input1}"
+""".strip()),
+        dcc.Markdown("""
+* one **Output**
+* zero or more **States**
+* zero or more **Inputs**
+* zero or more **Events**
+""")]
 
+    
+class DataStructures(Block):
+    header = True
+    shape = [[6, 6]]
+    content =[
+        Box("Immutable Data"),
+        dcc.Markdown("""
+* All callbacks share the same data
+* No globals!
 
-
-    # callback to change the data
-    # maybe also a callback to insert an image.
-
-
-# TODO: slides saying callbacks are for DOM also?
+This means:
+* callbacks can run concurrently
+  - through either multiple threads or worker processes 
+* can cache output of callbacks
+""")]
 
 
 class SinglePageApps(Block):
-    shape = [[4, 8]]
-    row_classes = ['center-y pad-top']
-    content = ['A simple URL router', dcc.SyntaxHighlighter(
-"""
-    app.callback(Output('main', 'children'), [Input('url', 'route')])
-    def display_page(route):
-        if route = '/':
-            return home_layout
-        elif route = '/viz1':
-            return viz1_layout
-        elif route = '/viz2':
-            return viz2_layout
-        else:
-            return page_not_found_layout
-""", language="python")]
+    shape = [[3, 9]]
+    header = True
+    content = [
+        'A simple URL router',
+        dcc.SyntaxHighlighter(
+            language="python",
+            theme="dark",
+            children="""
+app.callback(Output('main', 'children'), [Input('url', 'route')])
+def display_page(route):
+    if route = '/':
+        return home_layout
+    elif route = '/page-a':
+        return page_a_layout
+     elif route = '/page-b':
+        return page_b_layout
+    else:
+        return page_not_found_layout
+""".strip())
+    ]
 
 
 class Deployment(Block):
@@ -511,6 +667,7 @@ Where X = AWS, Google Cloud, Azure, etc...
 
 
 class Limitations(Block):
+    header = True
     shape = [[12]]
     content = dcc.Markdown(
 """
@@ -523,9 +680,8 @@ class Limitations(Block):
 """)
 
 
-# TODO: why is last page being duplicated
 class Conclusion(Block):
-    name = "A Dashing Future"
+    header = True
     shape = [[12]]
     content = dcc.Markdown(
 """
