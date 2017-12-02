@@ -22,30 +22,29 @@ class Title(Block):
     shape = [[6, 6]]
     content = [
         html.Div(dcc.Markdown("""
-#### Ned Letcher
-    nedned.net
-    @nletcher"""
+### Ned Letcher
+nedned.net  
+@nletcher"""
         )),
         Image(src='forefront.png', width=90, style={'marginTop':'4em'})
     ]
 
 
 class Context(Block):
+    name = "Sometimes you need a User Interface"
+    header = True
     shape = [[6, 6], [12], [6, 6]]
-    row_heights = [None, 20, None]
+
     content = [
-        # TODO change this to tabular data: eg screen shot of dataframe in
-        # jupyter notebook
-        Image('table.png', round=True, width=80),
-        Image('code.jpg', round=True, width=65),
-        FontA('fa-arrow-down'),
-        Image('charts.svg', round=True, width=65),
-        Image('interfaces.jpg', round=True, width=65),
+        Image('table.png', round=True, width=65),
+        Image('code.jpg', round=True, width=50),
+        FontA('fa-arrow-down fa-5x'),
+        Image('charts.svg', round=True, width=50),
+        Image('interfaces.jpg', round=True, width=50),
     ]
 
-
-class Need(Block):
-    name = "Needs to be"
+# TODO: fix the size of the blocl
+class Requirements(Block):
     header = True
     content = html.Div(
         dcc.Markdown(
@@ -58,15 +57,17 @@ class Need(Block):
 
 
 class WebPlatform(Block):
-    name = "The Web Platform"
+    name = "The Web Platform?"
     header = True
     content = Image('web.png', width=80)
 
 
+# TODO: add floating text indicating point of the slide
+# (does background image want to be a Block class attribute?)
 class Madness(Block):
     content = BackgroundImage(src='js_madness.png')
 
-
+# TODO: add floating text indicating point of the slide
 class Glue(Block):
     content = BackgroundImage(src='switchboard.jpg')
 
@@ -165,7 +166,7 @@ class DashExample(Block):
             ], className='pad-y', style={'font-size':'x-large'}),
             'content-3' :
             html.Div([
-                dcc.Graph(id='indicator-graphic', animate=True),
+                dcc.Graph(id='indicator-graphic'),
                 dcc.Slider(
                     id='year--slider',
                     min=df['Year'].min(),
@@ -218,11 +219,86 @@ class DashExample(Block):
             }
 
 
+# TODO:
+#  -- change 'JSON' to 'Flask API'
+#  -- 'HTML Layout' --> Layout
+#  -- 'Function Callback'
 class DashArchitecture(Block):
     header = True
     content = Image(src='dash-architecture.svg', width='80vw')
 
+    
+class Layout(Block):
+    title = True
 
+    
+# TODO:
+# * add this information:
+#   -- Components are React classes
+#   -- Converted into Python classes
+# * underneath the two types of components ad examples of each eg:
+#   -- html.Div, P, Img, H1 etc
+#   -- dcc.Graph, DatePicker, Slider 
+class Components(Block):
+    header = True    
+    content = html.Div(
+        className="tree",
+        children=html.Ul([
+            html.Li([
+                html.A("Component"),
+                html.Ul([
+                    html.Li(html.A("HTML Component", className="html-component")),
+                    html.Li(html.A("Dash Component", className="dcc-component")),
+                ])
+            ])
+        ])
+    )
+
+    
+# TODO:
+# -- Convert this into three rows of layout tree/Python code snippet pairs
+# this will show how the concept maps onto code snippets of Layouts
+# -- add one that includes a nested layout. eg one other tree
+# -- is found embedded in another. illustrates that they're composable/resusable
+class ComponentTrees(Block):
+    name = "Layouts are Component Trees"
+    header = True
+    content = html.Div([
+        Row([
+            html.Div([
+                html.A('Div', className="html-component"),
+                html.Ul([
+                    html.Li(html.A('H2', className="html-component")),
+                    html.Li(html.A('Graph', className="dcc-component")),
+                    html.Li(html.A('P', className="html-component")),
+                ])
+            ], className='clt'),
+            html.Div([
+                html.A('Div', className="html-component"),
+                html.Ul([
+                    html.Li(html.A('H1', className="html-component")),
+                    html.Li([
+                        html.Div(html.A('Ul', className="html-component")),
+                        html.Ul([
+                            html.Li(html.A('Li', className="html-component")),
+                            html.Li(html.A('Li', className="html-component")),
+                            html.Li(html.A('Li', className="html-component")),
+                        ])
+                    ]),
+                ])
+            ], className='clt'),
+            html.Div([
+                html.A('Div', className="html-component"),
+                html.Ul([
+                    html.Li(html.A('Markdown', className="dcc-component")),
+                    html.Li(html.A('Img', className="html-component")),
+                    html.Li(html.A('Img', className="html-component")),
+                ])
+            ], className='clt')
+        ])
+    ])
+    
+    
 class HelloWorld(Block):
     header = True
     shape = [
@@ -339,7 +415,10 @@ def update_grapph(size):
             return {'data': [go.Histogram(x=data)]}
 
 
-# create image with markup
+# TODO: ??
+# -- annotate this image with function of parts of the callback signature
+# -- eg output and input
+# -- indicate that input creates a listener on target element
 class UnpackingThings(Block):
     header = True
     shape = [[3, 9]]
@@ -370,61 +449,7 @@ def update_grapph(size):
     return {'data': [go.Histogram(x=data)]}
 """.strip()))
 ]
-
         
-class Layouts(Block):
-    header = True    
-    shape = [[6, 6]]
-    content = [
-        html.Div([
-            Row(html.P('Reusable Component trees', className="center")),
-            Row(html.P()),
-            Row([
-                html.Div([
-                    html.A('Div', className="html-component"),
-                    html.Ul([
-                        html.Li(html.A('H2', className="html-component")),
-                        html.Li(html.A('Graph', className="dcc-component")),
-                        html.Li(html.A('P', className="html-component")),
-                    ])
-                ], className='clt'),
-                html.Div([
-                    html.A('Div', className="html-component"),
-                    html.Ul([
-                        html.Li(html.A('H1', className="html-component")),
-                        html.Li([
-                            html.Div(html.A('Ul', className="html-component")),
-                            html.Ul([
-                                html.Li(html.A('Li', className="html-component")),
-                                html.Li(html.A('Li', className="html-component")),
-                                html.Li(html.A('Li', className="html-component")),
-                            ])
-                        ]),
-                    ])
-                ], className='clt'),
-                html.Div([
-                    html.A('Div', className="html-component"),
-                    html.Ul([
-                        html.Li(html.A('Markdown', className="dcc-component")),
-                        html.Li(html.A('Img', className="html-component")),
-                        html.Li(html.A('Img', className="html-component")),
-                    ])
-                ], className='clt')
-            ])
-        ]),
-        html.Div(
-            className="tree",
-            children=html.Ul([
-                html.Li([
-                    html.A("Component"),
-                    html.Ul([
-                        html.Li(html.A("HTML Component", className="html-component")),
-                        html.Li(html.A("Dash Component", className="dcc-component")),
-                    ])
-                ])
-            ])
-        )
-    ]
 
     
 class MarkdownComponent(Block):
@@ -453,6 +478,11 @@ An easy to read and write **markup** language
 * automatically converted to HTML
 * _greatly_ simplifies content creation
 """)]
+
+
+class DashComponents(Block):
+    title = True
+    name = "What's in the Box?"
 
 
 # TODO
@@ -600,13 +630,17 @@ def update(state1, input1, input2):
 """)]
 
     
-class DataStructures(Block):
+# TODO:
+# -- think of better name
+# -- rework the slide contents
+class CallbackData(Block):
     header = True
     shape = [[6, 6]]
     content =[
-        Box("Immutable Data"),
+        Box("Callbacks are stateless"),
         dcc.Markdown("""
-* All callbacks share the same data
+* All callbacks share the same memory
+* Treat underlying data as immutable
 * No globals!
 
 This means:
