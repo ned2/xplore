@@ -72,7 +72,7 @@ def Image(src=None, round=False, width=None, **kwargs):
     return html.Img(src=f'/static/img/{src}', **kwargs)
 
 
-def Col(children=None, size=12, **kwargs):
+def Col(children=None, size=None, **kwargs):
     if size is None:
         col_class = 'col'
     else:
