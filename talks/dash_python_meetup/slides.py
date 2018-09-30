@@ -1,4 +1,5 @@
 import os
+from textwrap import dedent
 
 import pandas as pd
 import numpy as np
@@ -12,20 +13,26 @@ from xplore import Block
 from xplore.layouts import *
 from xplore.components import Col, Row, Image, FontA, Box, BackgroundImage
 
+def s(string):
+    return dedent(string).strip()
+
 
 # Time: 30 minutes
 
 class Title(Block):
-    name = "Front-end Web Development in Python using Dash"
+    name = "Building Data-driven Web Applications with Dash"
     title = True
     shape = [[6, 6]]
+    row_classes = ['pad-top']
     content = [
-        html.Div(dcc.Markdown("""
-### Ned Letcher
-nedned.net  
-@nletcher"""
-        )),
-        Image(src='forefront.png', width=90, style={'marginTop':'4em'})
+        html.Div(dcc.Markdown(dedent("""
+        ### Ned Letcher
+        nedned.net  
+        @nletcher"""))),
+        html.Div([
+            Image(src='dash.svg'),
+            Image(src='plotly.png')
+        ], className='d-flex flex-column')
     ]
 
 
@@ -42,17 +49,18 @@ class Context(Block):
         Image('interfaces.jpg', round=True, width=50),
     ]
 
-# TODO: fix the size of the blocl
+
 class Requirements(Block):
     header = True
     content = html.Div(
-        dcc.Markdown(
-"""
-* interactive
-* sharable
-* deployable
-* scalable
-"""), className="note")
+        dcc.Markdown(s(
+            """
+            * interactive
+            * sharable
+            * deployable
+            * scalable
+            """), className="note")
+    )
 
 
 class WebPlatform(Block):
@@ -66,6 +74,7 @@ class WebPlatform(Block):
 class Madness(Block):
     content = BackgroundImage(src='js_madness.png')
 
+    
 # TODO: add floating text indicating point of the slide
 class Glue(Block):
     content = BackgroundImage(src='switchboard.jpg')
@@ -95,17 +104,19 @@ class Dash(Block):
             Row(Image(src='react.png', width=50), hcenter=True),
             Row(Image(src='plotly.png', width=50), hcenter=True),
         ]),
-        dcc.Markdown(
-"""
-* Framework for building data-driven reactive web applications
-  - __*using only Python!!*__
-* Made by Plotly
-* Open source (MIT Licence)
-* Active community
-* ~3k ★ on GitHub
-""")
-        ]
+        dcc.Markdown(s(
+            """
+            * Framework for building data-driven reactive web applications
+            - __*using only Python!!*__
+            * Made by Plotly
+            * Open source (MIT Licence)
+            * Active community
+            * ~6k ★ on GitHub
+            """)
+        )
+    ]
 
+    
 class Meta(Block):
     content = Image(src='whatifitoldyou.jpg')
 
@@ -218,10 +229,6 @@ class DashExample(Block):
             }
 
 
-# TODO:
-#  -- change 'JSON' to 'Flask API'
-#  -- 'HTML Layout' --> Layout
-#  -- 'Function Callback'
 class DashArchitecture(Block):
     header = True
     content = Image(src='dash-architecture.svg', width='80vw')
@@ -231,47 +238,88 @@ class Layout(Block):
     title = True
 
     
-# TODO:
-# * add this information:
-#   -- Components are React classes
-#   -- Converted into Python classes
-# * underneath the two types of components ad examples of each eg:
-#   -- html.Div, P, Img, H1 etc
-#   -- dcc.Graph, DatePicker, Slider 
 class Components(Block):
     header = True    
-    content = html.Div(
-        className="tree",
-        children=html.Ul([
-            html.Li([
-                html.A("Component"),
-                html.Ul([
-                    html.Li(html.A("HTML Component", className="html-component")),
-                    html.Li(html.A("Dash Component", className="dcc-component")),
+    shape = [[12], [12], [4,4,4]]
+    content = [
+        html.P("""
+            Dash Components are React components that
+            are serialised into Python classes."""),
+        html.Div(
+            className="tree",
+            children=html.Ul([
+                html.Li([
+                    html.A("Component"),
+                    html.Ul([
+                        html.Li(html.A("Dash HTML Component",
+                                       className="html-component")),
+                        html.Li(html.A("Dash Core Component",
+                                       className="dcc-component")),
+                        html.Li(html.A("Custom Dash Component",
+                                       className="custom-component")),
+                    ])
                 ])
             ])
-        ])
-    )
-
+        ),
+        html.Ul([
+            html.Li("Div"),
+            html.Li("Img"),
+            html.Li("H1, H2, H3"),
+            html.Li("P"),
+            html.Li("et cetera..."),
+        ]),
+        html.Ul([
+            html.Li("Graph"),
+            html.Li("Dropdown"),
+            html.Li("Slider"),
+            html.Li("Textarea"),
+            html.Li("DatePickerRange"),
+            html.Li("Markdown"),
+            html.Li("and more..."),
+        ]),
+        html.Div()
+    ]
     
-# TODO:
-# -- Convert this into three rows of layout tree/Python code snippet pairs
-# this will show how the concept maps onto code snippets of Layouts
-# -- add one that includes a nested layout. eg one other tree
-# -- is found embedded in another. illustrates that they're composable/resusable
+
 class ComponentTrees(Block):
     name = "Layouts are Component Trees"
     header = True
+    # not using shape because I haven't worked out a way to selctively make
+    # bootstrap cols produced by shape *not* horizontally centered
     content = html.Div([
+        Row([
+            html.Div(),
+            dcc.SyntaxHighlighter(
+                language='python',
+                theme='dark',           
+                children=s("""
+                import dash_html_components as html
+                import dash_core_components as dcc
+                """)
+            )
+        ], style={'width':'50vw'}),
         Row([
             html.Div([
                 html.A('Div', className="html-component"),
                 html.Ul([
-                    html.Li(html.A('H2', className="html-component")),
+                    html.Li(html.A('H1', className="html-component")),
                     html.Li(html.A('Graph', className="dcc-component")),
                     html.Li(html.A('P', className="html-component")),
                 ])
             ], className='clt'),
+            dcc.SyntaxHighlighter(
+                language='python',
+                theme='dark',    
+                children=s(
+                    """
+                    html.Div([
+                        html.H1("My Dashboard"),
+                        dcc.Graph(),
+                        html.P("We did a dashboard")
+                    ])
+                    """))
+        ], className='m-2'),
+        Row([
             html.Div([
                 html.A('Div', className="html-component"),
                 html.Ul([
@@ -286,6 +334,23 @@ class ComponentTrees(Block):
                     ]),
                 ])
             ], className='clt'),
+            dcc.SyntaxHighlighter(
+                language='python',
+                theme='dark',           
+                children=s(
+                    """
+                    html.Div([
+                        html.H1('My List'),
+                        html.Ul([
+                            html.Li(),
+                            html.Li(),
+                            html.Li(),
+                        ]),
+                    ])
+                    """)
+            )
+        ], className='m-2'),
+        Row([
             html.Div([
                 html.A('Div', className="html-component"),
                 html.Ul([
@@ -293,7 +358,20 @@ class ComponentTrees(Block):
                     html.Li(html.A('Img', className="html-component")),
                     html.Li(html.A('Img', className="html-component")),
                 ])
-            ], className='clt')
+            ], className='clt'),
+            dcc.SyntaxHighlighter(
+                language='python',
+                theme='dark',           
+                children=s("""
+                html.Div([
+                    dcc.Markdown('''
+                        # Some Markdown Content
+                        _Everybody_ loves Markdown'''),
+                    html.Img(src="image1.png"),
+                    html.Img(src="image2.png"),
+                ])
+                """)
+            )
         ])
     ])
     
@@ -314,25 +392,26 @@ class HelloWorld(Block):
             children=dcc.SyntaxHighlighter(
                 language='python',
                 theme='dark',           
-                children="""
-app = dash.Dash()
-data = np.random.normal(size=1000)
-
-app.layout = html.Div(
-    className="center",
-    children=[
-        html.H2('Woah', style={'color':'red'}),
-        dcc.Graph(
-            id='example-graph',
-            figure={
-                'data': [go.Histogram(x=data)],
-                'layout': {'title': 'Hello World'}
-            }
-        ),
-        html.P('We made a thing!')
-    ]
-)
-""".strip()
+                children=s(
+                    """
+                    app = dash.Dash()
+                    data = np.random.normal(size=1000)
+                    
+                    app.layout = html.Div(
+                        className="center",
+                        children=[
+                            html.H2('Woah', style={'color':'red'}),
+                            dcc.Graph(
+                                id='example-graph',
+                                figure={
+                                    'data': [go.Histogram(x=data)],
+                                    'layout': {'title': 'Hello World'}
+                                }
+                            ),
+                            html.P('We made a thing!')
+                        ]
+                    )
+                    """)
             )
         ),
         html.Div(
@@ -352,6 +431,110 @@ app.layout = html.Div(
     ]
 
 
+# TODO 
+
+# Add:
+# -- can only target one output element
+# -- each element-property pair can only be the output of one callback
+# -- can target layout     
+class Callbacks(Block):
+    header = True
+    hcenter = False
+    vcenter = False
+    shape = [[12], [7, 5], [7, 5]]
+    content = [
+        dcc.Markdown("Callbacks are Python decorators that make your app reactive."),
+        dcc.SyntaxHighlighter(
+            language="python",
+            theme="dark",
+            children=s(
+                """
+                @app.callback(
+                    Output('output-box', 'children'),
+                    [State('input', 'value')],
+                    [Input('slider', 'value'), Input('dropdown', 'value')])
+                def update(state1, input1, input2):
+                    return html.Div([
+                        html.Div(f"Input 1: {input1}"),
+                        html.Div(f"Input 2: {input2}"),
+                        html.Div(f"State 1: {state1}"),
+                    ])
+                """)
+        ),
+        dcc.Markdown(s(
+            """
+            They have:
+            * one **Output**
+            * zero or more **States**
+            * one or more **Inputs**
+            """)
+        ),
+        dcc.SyntaxHighlighter(
+            language="python",
+            theme="dark",
+            children=s(
+                """
+                html.Div([
+                    html.Div('Input 1:'),
+                    dcc.Slider(id='slider', min=0, max=10, step=1, value=1),
+                    html.Div('Input 2:'),
+                    dcc.Dropdown(
+                        id='dropdown', value='eggs',
+                        options=[
+                            {'label': 'Spam', 'value': 'spam'},
+                            {'label': 'Eggs', 'value': 'eggs'}
+                        ],
+                    ),
+                    html.Div('State 1:'),
+                    dcc.Input(id='input', value='state', type='text'),
+                    html.Div(id='output-box')
+                ])
+                """)
+        ),
+        html.Div([
+            html.Div('Input 1:'),
+            dcc.Slider(
+                id='slider',
+                min=0,
+                max=10,
+                step=1,
+                value=1
+            ),
+            html.Div('Input 2:'),
+            dcc.Dropdown(
+                id='dropdown',
+                value='eggs',
+                options=[
+                    {'label': 'Spam', 'value': 'spam'},
+                    {'label': 'Eggs', 'value': 'eggs'}
+                ],
+            ),
+            html.Div('State 1:'),
+            dcc.Input(
+                id='input',
+                value='state',
+                placeholder='state',
+                type='text'
+            ),
+            html.Div(id='output-box', className='output-box')
+        ]),
+    ]
+
+    def callbacks(self, app):
+        @app.callback(
+            Output('output-box', 'children'),
+            [Input('slider', 'value'), Input('dropdown', 'value')],
+            [State('input', 'value')]
+        )
+        def update(input1, input2, state1):
+            return html.Div([
+                html.Div(f"Input 1: {input1}"),
+                html.Div(f"Input 2: {input2}"),
+                html.Div(f"State 1: {state1}"),
+            ])
+
+
+    
 class ReactiveHelloWorld(Block):
     shape = [
         [None],
@@ -369,29 +552,30 @@ class ReactiveHelloWorld(Block):
             html.Div(dcc.SyntaxHighlighter(
                 theme='dark',
                 language='python', 
-                children="""
-app = dash.Dash()
-app.layout = html.Div(
-    children=[                
-        dcc.Graph(id='graph'),
-        dcc.Slider(
-            id='slider',
-            min=0,
-            max=1001,
-            value=0,
-            step=100,
-            marks={i:i for i in range(0, 1001, 100)}
-        )
-    ]
-)
+                children=s(
+                    """
+                    app = dash.Dash()
+                    app.layout = html.Div(
+                        children=[                
+                            dcc.Graph(id='graph'),
+                            dcc.Slider(
+                                id='slider',
+                                min=0,
+                                max=1001,
+                                value=0,
+                                step=100,
+                                marks={i:i for i in range(0, 1001, 100)}
+                            )
+                        ]
+                    )
 
-@app.callback(
-    Output('graph', 'figure'),
-    [Input('slider', 'value')])
-def update_grapph(size):
-    data = np.random.normal(size=size)
-    return {'data': [go.Histogram(x=data)]}
-""".strip()
+                    @app.callback(
+                        Output('graph', 'figure'),
+                        [Input('slider', 'value')])
+                    def update_grapph(size):
+                        data = np.random.normal(size=size)
+                        return {'data': [go.Histogram(x=data)]}
+                    """)
             )),
             html.Div([
                 dcc.Graph(id='graph'),
@@ -414,43 +598,6 @@ def update_grapph(size):
             return {'data': [go.Histogram(x=data)]}
 
 
-# TODO: ??
-# -- annotate this image with function of parts of the callback signature
-# -- eg output and input
-# -- indicate that input creates a listener on target element
-class UnpackingThings(Block):
-    header = True
-    shape = [[3, 9]]
-    content = [
-        html.Div(),
-        html.Div(dcc.SyntaxHighlighter(
-            theme='dark',
-            language='python', 
-            children="""
-app = dash.Dash()
-app.layout = html.Div(
-    children=[                
-        dcc.Graph(id='graph'),
-        dcc.Slider(
-            id='slider',
-            min=0,
-            max=1001,
-            value=0,
-            step=100,
-            marks={i:i for i in range(0, 1001, 100)}
-        )
-    ]
-)
-
-@app.callback(Output('graph', 'figure'), [Input('slider', 'value')])
-def update_grapph(size):
-    data = np.random.normal(size=size)
-    return {'data': [go.Histogram(x=data)]}
-""".strip()))
-]
-        
-
-    
 class MarkdownComponent(Block):
     header = True
     shape = [[6, 6]]
@@ -599,35 +746,6 @@ class Extensible(Block):
 """)
 
 
-# TODO 
-
-# Add:
-# -- can only target one output element
-# -- each element-property pair can only be the output of one callback
-# -- can target layout     
-class Callbacks(Block):
-    header = True
-    shape = [[None], [None]]
-    content = [
-        dcc.SyntaxHighlighter(
-            language="python",
-            theme="dark",
-            children="""    
-@app.callback(
-    Output('output-box', 'children'),
-    [State('input', 'value')],
-    [Input('slider', 'value'), [Input('dropdown', 'value')],
-    [Event('button', 'click')])
-def update(state1, input1, input2):
-    return f"Input box val: {state1}, slider val: {input1}, and dropdown val: {input1}"
-""".strip()),
-        dcc.Markdown("""
-* one **Output**
-* zero or more **States**
-* zero or more **Inputs**
-* zero or more **Events**
-""")]
-
     
 # TODO:
 # -- think of better name
@@ -677,24 +795,24 @@ class Deployment(Block):
     shape = [[8, 4]]
     row_classes = ['center-y']
     content = [
-        dcc.Markdown(
-"""
-* Dash/Flask comes with a built-in web server
-    - only meant for development
-    - can only handle one request at a time
-* You need a WSGI server
-    - Gunicorn
-    - uWSGI
-    - mod_wsgi (Apache)
-* Will work on basically any hosting environment
-    - potentially even Lambda (using Zappa)!!
-"""),
-        dcc.Markdown(
-"""
-Just Google:\\
-"Hosting Flask apps on X"\\
-Where X = AWS, Google Cloud, Azure, etc...
-""", className='note center')
+        dcc.Markdown(s(
+            """
+            * Dash/Flask comes with a built-in web server
+              - only meant for development
+              - can only handle one request at a time
+            * You need a WSGI server
+              - Gunicorn
+              - uWSGI
+              - mod_wsgi (Apache)
+            * Will work on basically any hosting environment
+              - potentially even Lambda (using Zappa)!!
+            """)),
+        dcc.Markdown(s(
+            """
+            Just Google:\\
+            "Hosting Flask apps on X"\\
+            Where X = AWS, Google Cloud, Azure, etc...
+            """), className='note center')
     ]
 
 

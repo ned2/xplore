@@ -27,7 +27,7 @@ pre {border-radius: 15px;}
 /* need to clean these up */
 #page .pad-y .row {margin-bottom: 1em}
 #page .pad-y-extra .row {margin-bottom: 2em}
-#page .pad-top {margin-top: 2em}
+#page .pad-top {margin-top: 3em}
 
 h1  {
     text-align: center;
@@ -122,3 +122,17 @@ img {align-self: center}
     background-color: #fd440c;
 }
 
+.custom-component {
+    background-color: #28a745;
+}
+
+.dcc-component, .html-component, .custom-component {
+    width: 12em;
+}
+
+.output-box {
+    background-color: grey;
+    margin: 0.5em;
+    padding: 0.5em;
+    border-radius: 5px;
+}
