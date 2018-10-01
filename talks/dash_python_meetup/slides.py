@@ -35,6 +35,33 @@ class Title(Block):
         ], className='d-flex flex-column')
     ]
 
+class UserInterfaces(Block):
+    name = "Sometimes you need a User Interface"
+    header = True
+    shape = [[8,4]]
+    content = [
+        dcc.Markdown(s(
+            """
+            * Business intelligence, analytics
+              - dashboards, KPIs etc
+              - interactive reports
+            * Research, science, data science
+              - interactive exploration of results
+              - vehicle for communicating results 
+              - prototypes
+            * DevOps, site reliability engineers (SREs)
+              - monitoring dashboards
+            * Data-driven journalism
+              - interactive content
+              - explorable explanations
+            * Web Development
+              - rapid prototyping 
+            """
+        )),
+        Image('charts.svg', round=True),        
+    ]
+
+
 
 class Context(Block):
     name = "Sometimes you need a User Interface"
@@ -52,15 +79,25 @@ class Context(Block):
 
 class Requirements(Block):
     header = True
-    content = html.Div(
+    shape = [[None]]
+    content = [
         dcc.Markdown(s(
             """
-            * interactive
-            * sharable
-            * deployable
-            * scalable
-            """), className="note")
-    )
+            * **Reactive**
+              - Responsive interface that users can interact with  
+            * **Sharable/accessible**
+              - Readily accessible by the target audience
+            * **Deployable**
+              - Offer a familiar pathway for deployment
+            * **Scalable**
+              - Should offer a pathway to servicing large-scale 
+            ---
+            **Some options**
+            * Jupyter Notebook/ Jupyter Lab
+            * R Shiny
+            """)
+        ),
+    ]
 
 
 class WebPlatform(Block):
@@ -83,10 +120,12 @@ class Glue(Block):
 class WeWant(Block):
     header = True
     shape = [[6]]
-    content = Box(dcc.Markdown(
-"""
-A simple framework for developing interactive web applications *within* Python 
-"""), center=True)
+    content = Box(dcc.Markdown(s(
+        """
+        A simple framework for rapidly developing interactive web applications
+        *within* Python.
+        """)
+    ), center=True)
 
 
 class Dash(Block):
