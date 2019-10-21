@@ -45,4 +45,4 @@ six==1.11.0               # via plotly, prompt-toolkit, python-dateutil, retryin
 traitlets==4.3.2          # via ipython, jupyter-core, nbformat
 urllib3==1.23             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
-werkzeug==0.14.1          # via flask
+werkzeug==0.15.3          # via flask
